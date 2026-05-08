@@ -138,6 +138,7 @@ label {
 <button onclick="spin()">SPIN</button>
 <button onclick="startTimer()">START TIMER</button>
 <button onclick="resetWheel()">RESET</button>
+<button onclick="resetTimer()">RESET</button>
 </div>
 
 <div id="output"></div>
@@ -292,7 +293,9 @@ const allQuestions = [
 {q:"Analyse the strengths and weaknesses of the biological approach.", s:"AO3", m:10, paper:"AS", year:"2023", tag:"assumptions"},
 {q:"‘It is not appropriate to use conditioning techniques to control the behaviour of children.’ Using psychological knowledge, discuss to what extent you agree with this statement, including reference to social and cultural diversity.", s:"AO3", m:20, paper:"AS", year:"2023", tag:"debate"}
 ];
-
+/* timer*/
+let timerInterval = null;  
+  
 /* ✅ STATE */
 let current = null;
 let usedQuestions = [];
@@ -367,6 +370,7 @@ function spin(){
 
 
 /* ✅ TIMER (95 sec per mark) */
+
 function startTimer(){
   if(!current) return;
 
@@ -376,15 +380,22 @@ function startTimer(){
 
   update(time);
 
-  timerInterval = setInterval(()=>{
+  timerInterval = setInterval(() => {
     time--;
     update(time);
 
-    if(time<=0){
+    if(time <= 0){
       clearInterval(timerInterval);
-      document.getElementById("timer").innerHTML="⏰ TIME UP!";
+      document.getElementById("timer").innerHTML = "⏰ TIME UP!";
     }
-  },1000);
+  }, 1000);
+}
+
+function resetTimer(){
+  clearInterval(timerInterval);   // ✅ stops timer
+  timerInterval = null;
+  update(0);
+  document.getElementById("timer").innerHTML = "⏱️ 00:00";
 }
 
 function update(t){
