@@ -369,7 +369,7 @@ function spin(){
 
 
 /* ✅ TIMER (95 sec per mark) */
-
+const timeUpSound = new Audio("https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg");
 function startTimer(){
   if(!current) return;
 
@@ -383,9 +383,10 @@ function startTimer(){
     time--;
     update(time);
 
-    if(time <= 0){
-      clearInterval(timerInterval);
-      document.getElementById("timer").innerHTML = "⏰ TIME UP!";
+    if (time <= 0){
+  clearInterval(timerInterval);
+  timeUpSound.play();              // 🔊 SOUND
+  document.getElementById("timer").innerHTML = "⏰ TIME UP!";
     }
   }, 1000);
 }
