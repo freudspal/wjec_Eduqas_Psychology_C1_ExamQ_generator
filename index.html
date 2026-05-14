@@ -29,7 +29,7 @@ body { font-family: 'Space Grotesk', sans-serif; background: var(--bg); color: v
 .btn-p { background: var(--ac); color: #000; }
 .btn-p:hover { filter: brightness(1.1); }
 .btn-o { background: transparent; border: 1px solid var(--bd); color: var(--tx); }
-.btn-o:hover { border-color: var(--ac); }
+.btn-o:hover:not(:disabled) { border-color: var(--ac); }
 
 /* --- GRID LAYOUT --- */
 .layout-grid {
@@ -109,7 +109,7 @@ body { font-family: 'Space Grotesk', sans-serif; background: var(--bg); color: v
 
 /* --- WINDOW 3: QUESTION --- */
 .q-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-.q-tag { display: inline-flex; padding: 4px 12px; border-radius: 20px; background: rgba(255, 159, 67, 0.1); color: var(--ac); font-size: 0.75rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
+.q-tag { display: inline-flex; padding: 4px 12px; border-radius: 20px; background: rgba(255, 159, 67, 0.1); color: var(--ac); font-size: 0.75rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; transition: 0.3s; }
 .q-sizer { display: flex; gap: 5px; }
 .q-sizer button { background: var(--sf2); border: 1px solid var(--bd); color: var(--tx); font-weight: bold; width: 30px; height: 30px; border-radius: 6px; cursor: pointer; transition: 0.2s; }
 .q-sizer button:hover { border-color: var(--ac); color: var(--ac); }
@@ -148,6 +148,18 @@ body { font-family: 'Space Grotesk', sans-serif; background: var(--bg); color: v
 .btn-timer-action { margin: 0; padding: 12px; font-size: 0.9rem; }
 .btn-timer-action:disabled { opacity: 0.5; cursor: not-allowed; }
 .btn-stop:hover:not(:disabled) { border-color: var(--re) !important; color: var(--re) !important; }
+
+/* Pulse Animation for Pause */
+.btn-pause.active-pause {
+    animation: pausePulse 0.8s infinite alternate;
+    border-color: var(--am) !important;
+    color: var(--am) !important;
+}
+
+@keyframes pausePulse {
+    from { box-shadow: 0 0 0px var(--am); background: transparent; }
+    to { box-shadow: 0 0 15px var(--am); background: rgba(245, 158, 11, 0.15); }
+}
 
 .btn-time { background: var(--sf2); border: 1px solid var(--bd); padding: 12px; font-size: 0.9rem; border-radius: 8px; color: var(--tx); font-weight: bold; cursor: pointer; transition: 0.2s;}
 .btn-time:hover:not(:disabled) { background: var(--bd); border-color: var(--ac); }
@@ -254,7 +266,7 @@ body { font-family: 'Space Grotesk', sans-serif; background: var(--bg); color: v
             <div class="timer-controls">
                 <div class="timer-row timer-row-main">
                     <button class="btn btn-p btn-timer-action" id="startBtn" onclick="startTimerOnly()" disabled>START</button>
-                    <button class="btn btn-o btn-timer-action" id="pauseBtn" onclick="pauseTimerOnly()" disabled>PAUSE</button>
+                    <button class="btn btn-o btn-timer-action btn-pause" id="pauseBtn" onclick="pauseTimerOnly()" disabled>PAUSE</button>
                     <button class="btn btn-o btn-timer-action btn-stop" id="stopBtn" onclick="stopTimerButton()" disabled>STOP</button>
                 </div>
                 <div class="timer-row timer-row-extra">
@@ -463,10 +475,13 @@ function spinMachine() {
     const marksBox = document.getElementById('lcdMarks');
     const mDot = document.getElementById('mDot');
     
-    // Stop any existing timer & reset toggles
+    // Stop any existing timer & reset toggles/UI
     stopTimer();
     disableTimerControls(true);
     resetExtraTimeToggles();
+    document.getElementById('pauseBtn').classList.remove('active-pause');
+    tBox.style.backgroundColor = "rgba(255, 159, 67, 0.1)";
+    tBox.style.color = "var(--ac)";
 
     if (pool.length === 0) {
         tBox.innerHTML = "ERROR";
@@ -553,38 +568,61 @@ function updateLCDTime(seconds) {
     secBox.innerText = s.toString().padStart(2, "0");
 }
 
-// Internal Helper
 function stopTimer() {
     if (timerInterval) clearInterval(timerInterval);
     isRunning = false;
     document.getElementById('lcdColon').classList.remove('blink');
 }
 
-// User Actions
+function triggerTimerEnd() {
+    stopTimer();
+    document.getElementById('pauseBtn').classList.remove('active-pause');
+    
+    const tBox = document.getElementById('uiTag');
+    tBox.innerHTML = "WASH CYCLE COMPLETE 😸";
+    tBox.style.backgroundColor = "rgba(34, 197, 94, 0.2)";
+    tBox.style.color = "var(--gr)";
+    
+    // Play a friendly Meow sound
+    new Audio("https://assets.mixkit.co/active_storage/sfx/93/93-preview.mp3").play().catch(e => console.log("Audio blocked by browser"));
+}
+
 function startTimerOnly() {
     if (timeRemaining <= 0 || isRunning) return;
     
     isRunning = true;
     document.getElementById('lcdColon').classList.add('blink');
+    document.getElementById('pauseBtn').classList.remove('active-pause');
     
     timerInterval = setInterval(() => {
         timeRemaining--;
         updateLCDTime(timeRemaining);
         
         if (timeRemaining <= 0) {
-            stopTimer();
-            new Audio("https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg").play().catch(e => console.log("Audio blocked by browser"));
+            triggerTimerEnd();
         }
     }, 1000);
 }
 
 function pauseTimerOnly() {
-    if (!isRunning) return;
-    stopTimer();
+    if (!currentQuestion || timeRemaining <= 0) return;
+    
+    const pauseBtn = document.getElementById('pauseBtn');
+    
+    if (isRunning) {
+        // We are currently running, so pause it
+        stopTimer();
+        pauseBtn.classList.add('active-pause');
+    } else {
+        // We are paused, so resume it
+        startTimerOnly();
+    }
 }
 
 function stopTimerButton() {
-    stopTimer();
+    stopTimer(); 
+    document.getElementById('pauseBtn').classList.remove('active-pause');
+    
     if (!currentQuestion) return;
     
     // Reset to full time + current modifiers
@@ -595,7 +633,6 @@ function stopTimerButton() {
     timeRemaining = baseTime + extra;
     updateLCDTime(timeRemaining);
 }
-
 
 /* --- EXTRA TIME TOGGLE LOGIC --- */
 function resetExtraTimeToggles() {
@@ -653,7 +690,16 @@ function resetMachine() {
     disableTimerControls(true);
     resetExtraTimeToggles();
     
-    document.getElementById('uiTag').innerHTML = "AWAITING PROGRAM";
+    document.getElementById('pauseBtn').classList.remove('active-pause');
+    
+    // Check all filters automatically
+    document.querySelectorAll('.cb-skill, .cb-paper, .cb-tag').forEach(cb => cb.checked = true);
+    
+    const tBox = document.getElementById('uiTag');
+    tBox.innerHTML = "AWAITING PROGRAM";
+    tBox.style.backgroundColor = "rgba(255, 159, 67, 0.1)";
+    tBox.style.color = "var(--ac)";
+    
     document.getElementById('uiQuestion').innerHTML = "Load the laundry and press SPIN to extract a random question.";
     
     document.getElementById('lcdSkill').className = "lcd-field skill skill-idle";
