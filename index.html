@@ -1,152 +1,274 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Psychology Spinner</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Psy-Cat-o-Matic</title>
+
+<!-- Favicon (Little Cat Face) -->
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>😸</text></svg>">
+
+<!-- Fonts: Space Grotesk, DM Serif Display, and Share Tech Mono (for LCD) -->
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Space+Grotesk:wght@300;500;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 
 <style>
-body {
-  font-family: Arial;
-  text-align: center;
-  background:#f4f4f4;
-  margin:0;
+/* --- BASE CSS --- */
+:root {
+  --bg: #0a0a0f; --sf: #13131a; --sf2: #1c1c28; --bd: #2a2a3e; --tx: #e8e8f0;
+  --mu: #6b6b85; --ac: #ff9f43; --ac2: #f368e0; --gr: #22c55e; --am: #f59e0b; --re: #ef4444;
 }
 
-/* Wheel */
-#wheel {
-  width:220px;
-  height:220px;
-  border-radius:50%;
-  border:6px solid black;
-  margin:10px auto;
-  background: conic-gradient(
-  #ff5252 0% 5%,
-  #ff9800 5% 10%,
-  #ffc107 10% 15%,
-  #4caf50 15% 20%,
-  #00bcd4 20% 25%,
-  #2196f3 25% 30%,
-  #3f51b5 30% 35%,
-  #9c27b0 35% 40%,
-  #e91e63 40% 45%,
-  #ff5722 45% 50%,
-  #8bc34a 50% 55%,
-  #00acc1 55% 60%,
-  #673ab7 60% 65%,
-  #f44336 65% 70%,
-  #cddc39 70% 75%,
-  #009688 75% 80%,
-  #795548 80% 85%,
-  #607d8b 85% 90%,
-  #ff4081 90% 95%,
-  #03a9f4 95% 100%
-  );
-  transition: transform 2.5s ease-out;
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body { font-family: 'Space Grotesk', sans-serif; background: var(--bg); color: var(--tx); min-height: 100vh; overflow-x: hidden; padding-bottom: 40px; }
+
+.hdr { padding: 16px 20px; display: flex; align-items: center; gap: 10px; background: var(--sf); border-bottom: 1px solid var(--bd); position: sticky; top: 0; z-index: 100; }
+.logo { font-family: 'DM Serif Display', serif; font-size: 1.6rem; color: var(--ac); display: flex; align-items: center; gap: 10px; }
+
+.card { background: var(--sf); border: 1px solid var(--bd); border-radius: 20px; padding: 20px; }
+.btn { width: 100%; padding: 16px; border-radius: 12px; border: none; font-family: inherit; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 1rem; transition: 0.2s; margin-bottom: 4px; }
+.btn-p { background: var(--ac); color: #000; }
+.btn-p:hover { filter: brightness(1.1); }
+.btn-o { background: transparent; border: 1px solid var(--bd); color: var(--tx); }
+.btn-o:hover { border-color: var(--ac); }
+
+/* --- GRID LAYOUT --- */
+.layout-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    max-width: 1000px;
+    margin: 20px auto;
+    padding: 0 20px;
 }
 
-/* Pointer */
-#pointer {
-  width:0;height:0;
-  border-left:12px solid transparent;
-  border-right:12px solid transparent;
-  border-top:24px solid red;
-  margin:auto;
+@media (min-width: 768px) {
+    .layout-grid {
+        grid-template-columns: 1fr 1fr;
+        grid-template-areas:
+            "filters spinner"
+            "question question"
+            "timer timer";
+    }
+    .panel-filters { grid-area: filters; }
+    .panel-spinner { grid-area: spinner; }
+    .panel-question { grid-area: question; }
+    .panel-timer { grid-area: timer; }
 }
 
-/* Buttons */
-button {
-  padding:12px 16px;
-  margin:5px;
-  font-size:16px;
-  cursor:pointer;
+@media (max-width: 767px) {
+    .panel-spinner { order: 1; }
+    .panel-filters { order: 2; }
+    .panel-question { order: 3; }
+    .panel-timer { order: 4; }
 }
 
-/* Filters */
-.filters {
-  margin:10px;
-  font-size:14px;
+/* --- WINDOW 1: FILTERS --- */
+.panel-title { font-family: 'DM Serif Display', serif; font-size: 1.4rem; margin-bottom: 15px; color: var(--ac); border-bottom: 1px solid var(--bd); padding-bottom: 10px; }
+.filter-group { margin-bottom: 15px; }
+.label-tiny { font-size: 0.65rem; font-weight: 800; color: var(--mu); letter-spacing: 1px; display: block; margin-bottom: 8px; text-transform: uppercase; }
+.checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 8px; }
+
+.chk-label { display: block; position: relative; cursor: pointer; font-size: 0.85rem; font-weight: 600; text-align: center; }
+.chk-label input { position: absolute; opacity: 0; cursor: pointer; height: 0; width: 0; }
+.chk-pill { display: block; padding: 8px 4px; background: var(--sf2); border: 2px solid var(--bd); border-radius: 8px; transition: 0.2s; color: var(--tx); }
+.chk-label input:checked ~ .chk-pill { background: rgba(255, 159, 67, 0.1); border-color: var(--ac); color: var(--ac); }
+
+/* --- WINDOW 2: LAUNDROMAT SPINNER --- */
+.laundromat-container { display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 15px; }
+.machine {
+    width: 160px; height: 190px;
+    background: var(--sf2); border: 4px solid var(--bd); border-radius: 12px;
+    position: relative; display: flex; flex-direction: column; align-items: center;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+}
+.machine-controls {
+    width: 100%; height: 25px; border-bottom: 3px solid var(--bd); display: flex; align-items: center; padding: 0 10px; gap: 6px; background: #232333; border-radius: 8px 8px 0 0;
+}
+.m-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--re); }
+.m-dot.on { background: var(--gr); box-shadow: 0 0 5px var(--gr); }
+.machine-drum-outer {
+    margin-top: 15px; width: 110px; height: 110px; border-radius: 50%;
+    background: #111; border: 6px solid #aaa; display: flex; align-items: center; justify-content: center;
+    box-shadow: inset 0 5px 15px rgba(0,0,0,0.8); position: relative;
+}
+.machine-glass {
+    position: absolute; width: 100%; height: 100%; border-radius: 50%;
+    background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 50%, rgba(135, 206, 235, 0.1) 100%);
+    z-index: 2; pointer-events: none;
+}
+.cat-in-drum { font-size: 3.5rem; line-height: 1; z-index: 1; transform-origin: center; transition: transform 0.2s; }
+.spinning .cat-in-drum { animation: tumble 0.5s infinite linear; }
+
+@keyframes tumble {
+    0% { transform: rotate(0deg) scale(0.9); }
+    50% { transform: rotate(180deg) scale(1); }
+    100% { transform: rotate(360deg) scale(0.9); }
 }
 
-label {
-  margin-right:10px;
+.spinner-actions { display: flex; gap: 10px; margin-top: 10px; width: 100%; }
+
+/* --- WINDOW 3: QUESTION --- */
+.q-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+.q-tag { display: inline-flex; padding: 4px 12px; border-radius: 20px; background: rgba(255, 159, 67, 0.1); color: var(--ac); font-size: 0.75rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
+.q-sizer { display: flex; gap: 5px; }
+.q-sizer button { background: var(--sf2); border: 1px solid var(--bd); color: var(--tx); font-weight: bold; width: 30px; height: 30px; border-radius: 6px; cursor: pointer; transition: 0.2s; }
+.q-sizer button:hover { border-color: var(--ac); color: var(--ac); }
+
+.q-main { font-family: 'DM Serif Display', serif; font-size: 1.8rem; line-height: 1.3; color: var(--tx); transition: font-size 0.2s; min-height: 80px;}
+.laundry-status { color: var(--mu); font-style: italic; font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; display: block; margin-top: 10px;}
+
+/* --- WINDOW 4: LCD TIMER --- */
+.timer-container { display: flex; flex-direction: column; gap: 15px; }
+.lcd-panel {
+    background: #050505; border: 3px solid #1a1a1a; border-radius: 12px;
+    padding: 15px; display: grid; grid-template-columns: 2fr 1fr 0.2fr 1fr; align-items: center;
+    font-family: 'Share Tech Mono', monospace; gap: 10px;
+    box-shadow: inset 0 0 15px rgba(0,0,0,0.8);
 }
 
-/* Output */
-#output {
-  margin:10px;
-  font-size:40px;
-}
+.lcd-info-stack { display: flex; flex-direction: column; gap: 8px; }
+.lcd-field { background: #111; border: 1px solid #222; border-radius: 6px; padding: 10px 5px; text-align: center; color: var(--tx); font-size: 1.2rem; }
+.lcd-field.skill { font-size: 0.85rem; font-weight: bold; letter-spacing: 0.5px; padding: 6px 5px; }
+.lcd-field.marks { font-size: 0.85rem; font-weight: bold; color: #a8a8b3; padding: 6px 5px; }
 
-#timer {
-  font-size:50px;
-  font-weight:bold;
-  color:darkred;
-  margin-top:10px;
-}
+.lcd-field.time { font-size: 2.2rem; text-shadow: 0 0 8px currentColor; }
+.lcd-colon { font-size: 2rem; color: #444; text-align: center; font-weight: bold; }
+.lcd-colon.blink { animation: blink 1s infinite; color: var(--tx); }
 
-/* Skill Highlight */
-.highlight {
-  font-size:50px;
-  font-weight:bold;
-}
-.AO1 { color:#4CAF50; }
-.AO2 { color:#2196F3; }
-.AO3 { color:#FF9800; }
+.skill-AO1 { color: #22c55e; text-shadow: 0 0 8px #22c55e; border-color: #0b3d1b; background: rgba(34, 197, 94, 0.05);}
+.skill-AO2 { color: #3b82f6; text-shadow: 0 0 8px #3b82f6; border-color: #12284c; background: rgba(59, 130, 246, 0.05);}
+.skill-AO3 { color: #f59e0b; text-shadow: 0 0 8px #f59e0b; border-color: #4a2d00; background: rgba(245, 158, 11, 0.05);}
+.skill-idle { color: #444; }
 
-/* Legend */
-.legend {
-  font-size:14px;
-  margin-top:5px;
-}
+.timer-controls { display: flex; flex-direction: column; gap: 10px; }
+.timer-row { display: grid; gap: 10px; }
+.timer-row-main { grid-template-columns: 1fr 1fr 1fr; }
+.timer-row-extra { grid-template-columns: 1fr 1fr; }
+
+.btn-timer-action { margin: 0; padding: 12px; font-size: 0.9rem; }
+.btn-timer-action:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-stop:hover:not(:disabled) { border-color: var(--re) !important; color: var(--re) !important; }
+
+.btn-time { background: var(--sf2); border: 1px solid var(--bd); padding: 12px; font-size: 0.9rem; border-radius: 8px; color: var(--tx); font-weight: bold; cursor: pointer; transition: 0.2s;}
+.btn-time:hover:not(:disabled) { background: var(--bd); border-color: var(--ac); }
+.btn-time.active { background: var(--ac); color: #000; border-color: var(--ac); }
+.btn-time:disabled { opacity: 0.5; cursor: not-allowed; }
+
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
 </style>
 </head>
-
 <body>
 
-<h2>🎡 Psychology Spinner</h2>
-
-<div id="pointer"></div>
-<div id="wheel"></div>
-
-<div class="legend">🟢 AO1 | 🔵 AO2 | 🟠 AO3</div>
-
-<!-- ✅ FILTERS -->
-<div class="filters">
-
-<b>Skill:</b>
-<label><input type="checkbox" value="AO1" checked>AO1</label>
-<label><input type="checkbox" value="AO2" checked>AO2</label>
-<label><input type="checkbox" value="AO3" checked>AO3</label>
-
-<br><br>
-
-<b>Paper:</b>
-<label><input type="checkbox" value="AS" checked>AS</label>
-<label><input type="checkbox" value="A" checked>A</label>
-
-<br><br>
-
-<b>Tag:</b>
-<label><input type="checkbox" value="assumptions" checked>Assumptions</label>
-<label><input type="checkbox" value="therapy" checked>Therapy</label>
-<label><input type="checkbox" value="classic research" checked>Research</label>
-<label><input type="checkbox" value="debate" checked>Debate</label>
-<label><input type="checkbox" value="approaches" checked>Approaches</label>
-
+<div class="hdr">
+    <div class="logo">😸 Psy-Cat-o-Matic</div>
 </div>
 
-<div>
-<button onclick="spin()">SPIN</button>
-<button onclick="startTimer()">START TIMER</button>
-<button onclick="resetWheel()">RESET</button>
-</div>
+<div class="layout-grid">
 
-<div id="output"></div>
-<div id="timer"></div>
+    <!-- WINDOW 1: FILTERS -->
+    <div class="card panel-filters">
+        <div class="panel-title">Select Program</div>
+        
+        <div class="filter-group">
+            <span class="label-tiny">Skill Level</span>
+            <div class="checkbox-grid">
+                <label class="chk-label"><input type="checkbox" class="cb-skill" value="AO1" checked><span class="chk-pill">AO1</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-skill" value="AO2" checked><span class="chk-pill">AO2</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-skill" value="AO3" checked><span class="chk-pill">AO3</span></label>
+            </div>
+        </div>
+
+        <div class="filter-group">
+            <span class="label-tiny">Paper</span>
+            <div class="checkbox-grid">
+                <label class="chk-label"><input type="checkbox" class="cb-paper" value="AS" checked><span class="chk-pill">AS</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-paper" value="A" checked><span class="chk-pill">A-Level</span></label>
+            </div>
+        </div>
+
+        <div class="filter-group">
+            <span class="label-tiny">Category / Tag</span>
+            <div class="checkbox-grid" style="grid-template-columns: 1fr 1fr;">
+                <label class="chk-label"><input type="checkbox" class="cb-tag" value="assumptions" checked><span class="chk-pill">Assumptions</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-tag" value="therapy" checked><span class="chk-pill">Therapy</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-tag" value="classic research" checked><span class="chk-pill">Research</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-tag" value="debate" checked><span class="chk-pill">Debate</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-tag" value="approaches" checked><span class="chk-pill">Approaches</span></label>
+            </div>
+        </div>
+    </div>
+
+    <!-- WINDOW 2: SPINNER -->
+    <div class="card panel-spinner">
+        <div class="panel-title">Washing Cycle</div>
+        
+        <div class="laundromat-container">
+            <div class="machine" id="catMachine">
+                <div class="machine-controls">
+                    <div class="m-dot on" id="mDot"></div>
+                    <div class="m-dot"></div>
+                    <div class="m-dot"></div>
+                </div>
+                <div class="machine-drum-outer">
+                    <div class="cat-in-drum">😼</div>
+                    <div class="machine-glass"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="spinner-actions">
+            <button class="btn btn-o" onclick="resetMachine()">RESET</button>
+            <button class="btn btn-p" onclick="spinMachine()">SPIN</button>
+        </div>
+    </div>
+
+    <!-- WINDOW 3: QUESTION -->
+    <div class="card panel-question">
+        <div class="q-header">
+            <div class="q-tag" id="uiTag">AWAITING PROGRAM</div>
+            <div class="q-sizer">
+                <button onclick="changeFontSize(-0.2)">A-</button>
+                <button onclick="changeFontSize(0.2)">A+</button>
+            </div>
+        </div>
+        <div class="q-main" id="uiQuestion" style="font-size: 1.8rem;">
+            Load the laundry and press SPIN to extract a random question.
+        </div>
+    </div>
+
+    <!-- WINDOW 4: TIMER -->
+    <div class="card panel-timer">
+        <div class="panel-title">Timer Display</div>
+        
+        <div class="timer-container">
+            <div class="lcd-panel">
+                <div class="lcd-info-stack">
+                    <div class="lcd-field skill skill-idle" id="lcdSkill">READY</div>
+                    <div class="lcd-field marks" id="lcdMarks">MARKS: --</div>
+                </div>
+                <div class="lcd-field time" id="lcdMin">00</div>
+                <div class="lcd-colon" id="lcdColon">:</div>
+                <div class="lcd-field time" id="lcdSec">00</div>
+            </div>
+
+            <div class="timer-controls">
+                <div class="timer-row timer-row-main">
+                    <button class="btn btn-p btn-timer-action" id="startBtn" onclick="startTimerOnly()" disabled>START</button>
+                    <button class="btn btn-o btn-timer-action" id="pauseBtn" onclick="pauseTimerOnly()" disabled>PAUSE</button>
+                    <button class="btn btn-o btn-timer-action btn-stop" id="stopBtn" onclick="stopTimerButton()" disabled>STOP</button>
+                </div>
+                <div class="timer-row timer-row-extra">
+                    <button class="btn-time" id="btn25" onclick="toggleExtraTime(0.25)" disabled>+25% TIME</button>
+                    <button class="btn-time" id="btn50" onclick="toggleExtraTime(0.50)" disabled>+50% TIME</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
 
 <script>
-
-/* ✅ ✅ PASTE YOUR DATASET HERE */
+/* --- DATA --- */
 const allQuestions = [
   {q:"State two stimuli used in the procedures of Watson and Rayner’s (1920) research ‘Conditioned emotional reactions’.", s:"AO1", m:2, paper:"AS", year:"2017", tag:"classic research"},
   {q:"Briefly explain the behaviourist assumption that humans are born a blank slate.", s:"AO1", m:2, paper:"AS", year:"2017", tag:"assumptions"},
@@ -293,130 +415,252 @@ const allQuestions = [
   {q:"Analyse the strengths and weaknesses of the biological approach.", s:"AO3", m:10, paper:"AS", year:"2023", tag:"approaches"},
   {q:"‘It is not appropriate to use conditioning techniques to control the behaviour of children.’ Using psychological knowledge, discuss to what extent you agree with this statement, including reference to social and cultural diversity.", s:"AO3", m:20, paper:"AS", year:"2023", tag:"debate"}
 ];
-/* timer*/
-let timerInterval = null;  
-  
-/* ✅ STATE */
-let current = null;
+
+/* --- STATE & LOGIC --- */
+let currentQuestion = null;
 let usedQuestions = [];
-let rotation = 0;
+let currentFontSize = 1.8;
 
+// Timer State
+let timerInterval = null;
+let baseTime = 0;       
+let timeRemaining = 0;  
+let isRunning = false;
 
-const wheel = document.getElementById("wheel");
+// Toggles state (0, 0.25, or 0.50)
+let activeExtraTime = 0; 
 
-/* ✅ FILTER LOGIC */
-function getFullFilteredPool(){
-
-  const skills = Array.from(document.querySelectorAll("input[value^='AO']:checked"))
-                      .map(cb => cb.value);
-
-  const papers = Array.from(document.querySelectorAll("input[value='AS'], input[value='A']"))
-                      .filter(cb => cb.checked)
-                      .map(cb => cb.value);
-
-  const tags = Array.from(document.querySelectorAll("input[type=checkbox]"))
-                    .filter(cb =>
-                      cb.checked &&
-                      !cb.value.startsWith("AO") &&
-                      cb.value !== "AS" &&
-                      cb.value !== "A"
-                    )
-                    .map(cb => cb.value);
-
-  return allQuestions.filter(q =>
-    skills.includes(q.s) &&
-    papers.includes(q.paper) &&
-    tags.includes(q.tag) &&
-    !usedQuestions.includes(q)
-  );
+/* --- FONT SIZE --- */
+function changeFontSize(amount) {
+    currentFontSize += amount;
+    if(currentFontSize < 1.0) currentFontSize = 1.0;
+    if(currentFontSize > 3.0) currentFontSize = 3.0;
+    document.getElementById('uiQuestion').style.fontSize = currentFontSize + 'rem';
 }
 
+/* --- FILTERING --- */
+function getFullFilteredPool() {
+    const skills = Array.from(document.querySelectorAll(".cb-skill:checked")).map(cb => cb.value);
+    const papers = Array.from(document.querySelectorAll(".cb-paper:checked")).map(cb => cb.value);
+    const tags = Array.from(document.querySelectorAll(".cb-tag:checked")).map(cb => cb.value);
 
+    return allQuestions.filter(q =>
+        skills.includes(q.s) &&
+        papers.includes(q.paper) &&
+        tags.includes(q.tag) &&
+        !usedQuestions.includes(q)
+    );
+}
 
-/* ✅ SPIN */
-function spin(){
-
-  let spinAmount = 720 + Math.random()*360;
-  rotation += spinAmount;
-  wheel.style.transform = `rotate(${rotation}deg)`;
-
-  setTimeout(()=>{
-
-    // ✅ FULL FILTERED POOL (NO SKILL FROM WHEEL)
+/* --- SPIN ACTION --- */
+function spinMachine() {
     let pool = getFullFilteredPool();
 
-    if(pool.length === 0){
-      document.getElementById("output").innerHTML =
-        "<b>No matching questions — adjust filters</b>";
-      return;
+    const machine = document.getElementById('catMachine');
+    const qBox = document.getElementById('uiQuestion');
+    const tBox = document.getElementById('uiTag');
+    const skillBox = document.getElementById('lcdSkill');
+    const marksBox = document.getElementById('lcdMarks');
+    const mDot = document.getElementById('mDot');
+    
+    // Stop any existing timer & reset toggles
+    stopTimer();
+    disableTimerControls(true);
+    resetExtraTimeToggles();
+
+    if (pool.length === 0) {
+        tBox.innerHTML = "ERROR";
+        qBox.innerHTML = "<span style='color:var(--re);'>No matching questions found! Please adjust your Program filters or Reset.</span>";
+        return;
     }
 
-    let index = Math.floor(Math.random()*pool.length);
-    current = pool[index];
+    // Start washing animation
+    machine.classList.add('spinning');
+    mDot.classList.add('on');
+    
+    // Pick ONE random phrase to show during the quick spin
+    const phrases = [
+        "Loading laundry... 🧺", 
+        "Adding detergent... 🫧", 
+        "Spin cycle active... 🌀", 
+        "Extracting question... 😼",
+        "Checking pockets... 👖",
+        "Washing away mistakes... 🧼"
+    ];
+    let randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
+    
+    tBox.innerHTML = "WASHING...";
+    qBox.innerHTML = `<span class="laundry-status">${randomPhrase}</span>`;
 
-    usedQuestions.push(current);
+    // Reset LCD visually
+    skillBox.className = "lcd-field skill skill-idle";
+    skillBox.innerText = "WAIT";
+    marksBox.innerText = "MARKS: --";
+    updateLCDTime(0);
 
-    // ✅ Display (skill still shown, just not controlled by wheel)
-    document.getElementById("output").innerHTML =
-      `<div class="highlight ${current.s}">Skill: ${current.s}</div>
-       <b>${current.q}</b><br>
-       Marks: ${current.m} | Paper: ${current.paper} | Year: ${current.year} | Tag: ${current.tag}`;
+    // Stop after 1.5 seconds and load question
+    setTimeout(() => {
+        machine.classList.remove('spinning');
+        mDot.classList.remove('on');
+        
+        // Select random question
+        let index = Math.floor(Math.random() * pool.length);
+        currentQuestion = pool[index];
+        usedQuestions.push(currentQuestion);
+        
+        // Update UI Text
+        tBox.innerHTML = `${currentQuestion.tag} - PAPER ${currentQuestion.paper} (${currentQuestion.year})`;
+        qBox.innerHTML = currentQuestion.q;
+        
+        // Setup Timer Display
+        let skillLabel = currentQuestion.s;
+        if(skillLabel === "AO1") skillLabel += " - DESCRIBE";
+        if(skillLabel === "AO2") skillLabel += " - APPLY";
+        if(skillLabel === "AO3") skillLabel += " - EVALUATE";
+        
+        skillBox.className = `lcd-field skill skill-${currentQuestion.s}`;
+        skillBox.innerText = skillLabel;
+        marksBox.innerText = `MARKS: ${currentQuestion.m}`;
 
-    clearInterval(timerInterval);
-    document.getElementById("timer").innerHTML="";
+        // Initialize Timer (81 seconds per mark)
+        baseTime = currentQuestion.m * 81; 
+        timeRemaining = baseTime;
+        updateLCDTime(timeRemaining);
 
-  },2500);
+        // Enable timer buttons
+        disableTimerControls(false);
+
+    }, 1500);
+}
+
+/* --- TIMER LOGIC --- */
+function disableTimerControls(disabled) {
+    document.getElementById('startBtn').disabled = disabled;
+    document.getElementById('pauseBtn').disabled = disabled;
+    document.getElementById('stopBtn').disabled = disabled;
+    document.getElementById('btn25').disabled = disabled;
+    document.getElementById('btn50').disabled = disabled;
+}
+
+function updateLCDTime(seconds) {
+    const minBox = document.getElementById('lcdMin');
+    const secBox = document.getElementById('lcdSec');
+    
+    let m = Math.floor(seconds / 60);
+    let s = seconds % 60;
+    
+    minBox.innerText = m.toString().padStart(2, "0");
+    secBox.innerText = s.toString().padStart(2, "0");
+}
+
+// Internal Helper
+function stopTimer() {
+    if (timerInterval) clearInterval(timerInterval);
+    isRunning = false;
+    document.getElementById('lcdColon').classList.remove('blink');
+}
+
+// User Actions
+function startTimerOnly() {
+    if (timeRemaining <= 0 || isRunning) return;
+    
+    isRunning = true;
+    document.getElementById('lcdColon').classList.add('blink');
+    
+    timerInterval = setInterval(() => {
+        timeRemaining--;
+        updateLCDTime(timeRemaining);
+        
+        if (timeRemaining <= 0) {
+            stopTimer();
+            new Audio("https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg").play().catch(e => console.log("Audio blocked by browser"));
+        }
+    }, 1000);
+}
+
+function pauseTimerOnly() {
+    if (!isRunning) return;
+    stopTimer();
+}
+
+function stopTimerButton() {
+    stopTimer();
+    if (!currentQuestion) return;
+    
+    // Reset to full time + current modifiers
+    let extra = 0;
+    if (activeExtraTime === 0.25) extra = Math.floor(baseTime * 0.25);
+    if (activeExtraTime === 0.50) extra = Math.floor(baseTime * 0.50);
+    
+    timeRemaining = baseTime + extra;
+    updateLCDTime(timeRemaining);
 }
 
 
-/* ✅ TIMER (95 sec per mark) */
-const timeUpSound = new Audio("https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg");
-function startTimer(){
-  if(!current) return;
+/* --- EXTRA TIME TOGGLE LOGIC --- */
+function resetExtraTimeToggles() {
+    activeExtraTime = 0;
+    document.getElementById('btn25').classList.remove('active');
+    document.getElementById('btn50').classList.remove('active');
+}
 
-  clearInterval(timerInterval);
+function toggleExtraTime(percent) {
+    if (!currentQuestion) return;
 
-  let time = current.m * 81;
+    let extra25 = Math.floor(baseTime * 0.25);
+    let extra50 = Math.floor(baseTime * 0.50);
 
-  update(time);
+    let btn25 = document.getElementById('btn25');
+    let btn50 = document.getElementById('btn50');
 
-  timerInterval = setInterval(() => {
-    time--;
-    update(time);
+    // If clicking the button that is ALREADY active -> turn it off
+    if (activeExtraTime === percent) {
+        let amountToSubtract = (percent === 0.25) ? extra25 : extra50;
+        timeRemaining = Math.max(0, timeRemaining - amountToSubtract); // Safely remove time
+        activeExtraTime = 0;
+        
+        if (percent === 0.25) btn25.classList.remove('active');
+        if (percent === 0.50) btn50.classList.remove('active');
+    } 
+    // Otherwise, we are turning a NEW button on
+    else {
+        // Step 1: Remove existing extra time if a different button was active
+        if (activeExtraTime === 0.25) {
+            timeRemaining = Math.max(0, timeRemaining - extra25);
+            btn25.classList.remove('active');
+        } else if (activeExtraTime === 0.50) {
+            timeRemaining = Math.max(0, timeRemaining - extra50);
+            btn50.classList.remove('active');
+        }
 
-    if (time <= 0){
-  clearInterval(timerInterval);
-  timeUpSound.play();              // 🔊 SOUND
-  document.getElementById("timer").innerHTML = "⏰ TIME UP!";
+        // Step 2: Add the newly requested extra time
+        let amountToAdd = (percent === 0.25) ? extra25 : extra50;
+        timeRemaining += amountToAdd;
+        activeExtraTime = percent;
+        
+        if (percent === 0.25) btn25.classList.add('active');
+        if (percent === 0.50) btn50.classList.add('active');
     }
-  }, 1000);
+
+    updateLCDTime(timeRemaining);
 }
 
-function resetTimer(){
-  clearInterval(timerInterval);   // ✅ stops timer
-  timerInterval = null;
-  update(0);
-  document.getElementById("timer").innerHTML = "⏱️ 00:00";
+/* --- RESET --- */
+function resetMachine() {
+    stopTimer();
+    usedQuestions = [];
+    currentQuestion = null;
+    disableTimerControls(true);
+    resetExtraTimeToggles();
+    
+    document.getElementById('uiTag').innerHTML = "AWAITING PROGRAM";
+    document.getElementById('uiQuestion').innerHTML = "Load the laundry and press SPIN to extract a random question.";
+    
+    document.getElementById('lcdSkill').className = "lcd-field skill skill-idle";
+    document.getElementById('lcdSkill').innerText = "READY";
+    document.getElementById('lcdMarks').innerText = "MARKS: --";
+    updateLCDTime(0);
 }
-
-function update(t){
-  let m = Math.floor(t/60);
-  let s = t % 60;
-  document.getElementById("timer").innerHTML =
-    `${m}:${s.toString().padStart(2,"0")}`;
-}
-
-/* ✅ RESET */
-
-function resetWheel(){
-  resetTimer();          // ✅ stop timer
-  usedQuestions = [];
-  rotation = 0;
-  current = null;
-  wheel.style.transform = "rotate(0deg)";
-  document.getElementById("output").innerHTML = "<b>Reset complete</b>";
-}
-
 
 </script>
 
