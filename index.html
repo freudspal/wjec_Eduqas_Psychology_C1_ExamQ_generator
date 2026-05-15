@@ -131,8 +131,8 @@ body { font-family: 'Space Grotesk', sans-serif; background: var(--bg); color: v
 .lcd-field.skill { font-size: 0.85rem; font-weight: bold; letter-spacing: 0.5px; padding: 6px 5px; }
 .lcd-field.marks { font-size: 0.85rem; font-weight: bold; color: #a8a8b3; padding: 6px 5px; }
 
-.lcd-field.time { font-size: 2.2rem; text-shadow: 0 0 8px currentColor; }
-.lcd-colon { font-size: 2rem; color: #444; text-align: center; font-weight: bold; }
+.lcd-field.time { font-size: 2.2rem; text-shadow: 0 0 8px currentColor; transition: 0.3s; }
+.lcd-colon { font-size: 2rem; color: #444; text-align: center; font-weight: bold; transition: 0.3s; }
 .lcd-colon.blink { animation: blink 1s infinite; color: var(--tx); }
 
 .skill-AO1 { color: #22c55e; text-shadow: 0 0 8px #22c55e; border-color: #0b3d1b; background: rgba(34, 197, 94, 0.05);}
@@ -167,6 +167,39 @@ body { font-family: 'Space Grotesk', sans-serif; background: var(--bg); color: v
 .btn-time:disabled { opacity: 0.5; cursor: not-allowed; }
 
 @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
+
+/* --- TIMER FLASH RED STATE (When hitting 0) --- */
+.timer-flash {
+    color: var(--re) !important;
+    text-shadow: 0 0 15px var(--re) !important;
+    animation: flashRed 0.8s infinite alternate !important;
+}
+@keyframes flashRed {
+    0% { opacity: 1; }
+    100% { opacity: 0.3; }
+}
+
+/* --- SPLASH OVERLAY CSS --- */
+.splash-overlay {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(10, 10, 15, 0.85); backdrop-filter: blur(4px);
+    z-index: 9999; display: none; align-items: center; justify-content: center;
+}
+.splash-modal {
+    background: var(--sf); border: 2px solid var(--ac); border-radius: 20px;
+    padding: 40px 30px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+    max-width: 90%; width: 420px;
+    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+.splash-icon { font-size: 5rem; margin-bottom: 10px; }
+.splash-title { font-family: 'DM Serif Display', serif; color: var(--ac); font-size: 2.2rem; margin-bottom: 10px; line-height: 1.1; }
+.splash-text { color: var(--tx); font-size: 1.1rem; margin-bottom: 30px; }
+
+@keyframes popIn {
+    0% { transform: scale(0.7); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
 </style>
 </head>
 <body>
@@ -277,6 +310,16 @@ body { font-family: 'Space Grotesk', sans-serif; background: var(--bg); color: v
         </div>
     </div>
 
+</div>
+
+<!-- SPLASH SCREEN OVERLAY -->
+<div id="splashOverlay" class="splash-overlay">
+    <div class="splash-modal">
+        <div class="splash-icon">😻</div>
+        <div class="splash-title">WASH CYCLE COMPLETE!</div>
+        <div class="splash-text">Time is up!</div>
+        <button class="btn btn-p" onclick="closeSplash()">CLOSE</button>
+    </div>
 </div>
 
 <script>
@@ -433,6 +476,9 @@ let currentQuestion = null;
 let usedQuestions = [];
 let currentFontSize = 1.8;
 
+// Global Audio Engine (Loaded early so it's ready)
+const catSound = new Audio("https://cdn.pixabay.com/audio/2025/02/26/audio_6c95941b94.mp3");
+
 // Timer State
 let timerInterval = null;
 let baseTime = 0;       
@@ -480,6 +526,12 @@ function spinMachine() {
     disableTimerControls(true);
     resetExtraTimeToggles();
     document.getElementById('pauseBtn').classList.remove('active-pause');
+    
+    // REMOVE the red flashing effect from the timer
+    document.getElementById('lcdMin').classList.remove('timer-flash');
+    document.getElementById('lcdColon').classList.remove('timer-flash');
+    document.getElementById('lcdSec').classList.remove('timer-flash');
+
     tBox.style.backgroundColor = "rgba(255, 159, 67, 0.1)";
     tBox.style.color = "var(--ac)";
 
@@ -574,18 +626,34 @@ function stopTimer() {
     document.getElementById('lcdColon').classList.remove('blink');
 }
 
+function closeSplash() {
+    // ONLY close the overlay. Do NOT reset the machine.
+    document.getElementById('splashOverlay').style.display = 'none';
+}
+
 function triggerTimerEnd() {
     stopTimer();
     document.getElementById('pauseBtn').classList.remove('active-pause');
     
+    // Update main UI tag 
     const tBox = document.getElementById('uiTag');
     tBox.innerHTML = "WASH CYCLE COMPLETE 😸";
     tBox.style.backgroundColor = "rgba(34, 197, 94, 0.2)";
     tBox.style.color = "var(--gr)";
     
-    // Play a friendly Meow sound
-    new Audio("https://assets.mixkit.co/active_storage/sfx/93/93-preview.mp3").play().catch(e => console.log("Audio blocked by browser"));
+    // Add the flashing red effect to the LCD timer
+    document.getElementById('lcdMin').classList.add('timer-flash');
+    document.getElementById('lcdColon').classList.add('timer-flash');
+    document.getElementById('lcdSec').classList.add('timer-flash');
+    
+    // Play Cat Sound
+    catSound.currentTime = 0;
+    catSound.play().catch(e => console.log("Audio blocked by browser policy"));
+    
+    // Show Splash Modal
+    document.getElementById('splashOverlay').style.display = 'flex';
 }
+
 
 function startTimerOnly() {
     if (timeRemaining <= 0 || isRunning) return;
@@ -594,11 +662,17 @@ function startTimerOnly() {
     document.getElementById('lcdColon').classList.add('blink');
     document.getElementById('pauseBtn').classList.remove('active-pause');
     
+    // Safe Loop that stops strictly at 0
     timerInterval = setInterval(() => {
-        timeRemaining--;
-        updateLCDTime(timeRemaining);
+        if (timeRemaining > 0) {
+            timeRemaining--;
+            updateLCDTime(timeRemaining);
+        }
         
         if (timeRemaining <= 0) {
+            // Strictly clamp to 0 and end it
+            timeRemaining = 0;
+            updateLCDTime(timeRemaining);
             triggerTimerEnd();
         }
     }, 1000);
@@ -691,6 +765,11 @@ function resetMachine() {
     resetExtraTimeToggles();
     
     document.getElementById('pauseBtn').classList.remove('active-pause');
+    
+    // REMOVE the red flashing effect from the timer
+    document.getElementById('lcdMin').classList.remove('timer-flash');
+    document.getElementById('lcdColon').classList.remove('timer-flash');
+    document.getElementById('lcdSec').classList.remove('timer-flash');
     
     // Check all filters automatically
     document.querySelectorAll('.cb-skill, .cb-paper, .cb-tag').forEach(cb => cb.checked = true);
