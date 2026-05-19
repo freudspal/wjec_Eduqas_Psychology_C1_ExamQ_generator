@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Psy-Cat-o-Matic</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>😸</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Space+Grotesk:wght@300;500;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+<style>
+/* --- BASE THEME --- */
+:root {
+  --bg: #0a0a0f; --sf: #13131a; --sf2: #1c1c28; --bd: #2a2a3e; --tx: #e8e8f0;
+  --mu: #6b6b85; --ac: #ff9f43; --ac2: #22c55e; --ac3: #a855f7;
+  --gr: #22c55e; --am: #f59e0b; --re: #ef4444; --cy: #06b6d4;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body { font-family: 'Space Grotesk', sans-serif; background: var(--bg); color: var(--tx); min-height: 100vh; overflow-x: hidden; padding-bottom: 60px; }
+
+/* --- HEADER --- */
+.hdr { padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; background: var(--sf); border-bottom: 1px solid var(--bd); position: sticky; top: 0; z-index: 100; flex-wrap: wrap; gap: 15px; }
+.logo { font-family: 'DM Serif Display', serif; font-size: 1.6rem; color: var(--ac); display: flex; align-items: center; gap: 10px; }
+.logo-img { width: 35px; height: 32px; border-radius: 50%; object-fit: cover; border: 2px solid var(--ac); }
+.tabs { display: flex; gap: 10px; background: var(--sf2); padding: 5px; border-radius: 12px; border: 1px solid var(--bd); overflow-x: auto; }
+.tab-btn { background: transparent; border: none; color: var(--mu); font-family: inherit; font-weight: 700; padding: 10px 18px; border-radius: 8px; cursor: pointer; transition: 0.2s; font-size: 0.85rem; white-space: nowrap; }
+.tab-btn.active-c1 { background: var(--ac); color: #000; }
+.tab-btn.active-c2 { background: var(--ac2); color: #000; }
+.tab-btn.active-c3 { background: var(--ac3); color: #000; }
+
+/* --- GRID --- */
+.layout-grid { display: grid; grid-template-columns: 1fr; gap: 25px; max-width: 1100px; margin: 20px auto; padding: 0 20px; }
+@media (min-width: 768px) {
+    .layout-grid { grid-template-columns: 1fr 1fr; grid-template-areas: "filters spinner" "question question" "timer timer"; }
+    .panel-filters { grid-area: filters; } .panel-spinner { grid-area: spinner; } .panel-question { grid-area: question; } .panel-timer { grid-area: timer; }
+}
+.card { background: var(--sf); border: 1px solid var(--bd); border-radius: 20px; padding: 25px; }
+.panel-title { font-family: 'DM Serif Display', serif; font-size: 1.5rem; color: var(--ac); border-bottom: 1px solid var(--bd); padding-bottom: 12px; margin-bottom: 20px; }
+
+/* --- FILTERS --- */
+.filter-group { margin-bottom: 20px; }
+.label-tiny { font-size: 0.7rem; font-weight: 800; color: var(--mu); letter-spacing: 1px; display: block; margin-bottom: 10px; text-transform: uppercase; }
+.checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+.chk-label { display: block; position: relative; cursor: pointer; font-size: 0.85rem; font-weight: 600; text-align: center; }
+.chk-label input { position: absolute; opacity: 0; }
+.chk-pill { display: block; padding: 12px 6px; background: var(--sf2); border: 2px solid var(--bd); border-radius: 10px; transition: 0.2s; color: var(--tx); line-height: 1.2; }
+.chk-label input:checked ~ .chk-pill { background: rgba(255, 159, 67, 0.1); border-color: var(--ac); color: var(--ac); }
+.chk-label input:disabled ~ .chk-pill { opacity: 0.15; cursor: not-allowed; border-style: dashed; }
+
+.filter-set { display: none; }
+.filter-set.active { display: block; }
+
+/* --- MACHINE CYCLE BOX --- */
+.machine-box { display: flex; flex-direction: column; align-items: center; }
+.machine { width: 180px; height: 210px; background: var(--sf2); border: 4px solid var(--bd); border-radius: 15px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.4); margin-bottom: 20px; }
+.machine-controls { width: 100%; height: 30px; border-bottom: 3px solid var(--bd); display: flex; align-items: center; padding: 0 12px; gap: 8px; background: #232333; border-radius: 10px 10px 0 0; }
+.m-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--re); }
+.m-dot.on { background: var(--am); box-shadow: 0 0 10px var(--am); }
+.machine-drum-outer { margin-top: 15px; width: 120px; height: 120px; border-radius: 50%; background: #000; border: 6px solid #888; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+.cat-in-drum { width: 100%; height: 100%; object-fit: cover; }
+.spinning .cat-in-drum { animation: tumble 0.4s infinite linear; }
+
+.global-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; margin-top: 15px; border-top: 1px solid var(--bd); padding-top: 15px;}
+.btn-mini { padding: 10px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; border-radius: 8px; background: var(--sf2); border: 1px solid var(--bd); color: var(--mu); cursor: pointer; transition: 0.2s; }
+.spinner-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; margin-top: 10px; }
+.btn-p { background: var(--ac); color: #000; font-weight: 800; border-radius: 12px; border: none; cursor: pointer; padding: 15px; transition: 0.3s;}
+.btn-o { background: transparent; border: 1px solid var(--bd); color: var(--tx); font-weight: 800; border-radius: 12px; cursor: pointer; padding: 15px; transition: 0.3s;}
+
+/* --- THEMES --- */
+body.theme-c2 .logo, body.theme-c2 .logo-img, body.theme-c2 .panel-title, body.theme-c2 .q-tag, body.theme-c2 .lcd-field.skill { color: var(--ac2); border-color: var(--ac2); }
+body.theme-c2 .btn-p, body.theme-c2 .btn-time.active { background: var(--ac2); color: #000; }
+body.theme-c2 .chk-label input:checked ~ .chk-pill { background: rgba(34, 197, 94, 0.1); border-color: var(--ac2); color: var(--ac2); }
+
+body.theme-c3 .logo, body.theme-c3 .logo-img, body.theme-c3 .panel-title, body.theme-c3 .q-tag, body.theme-c3 .lcd-field.skill { color: var(--ac3); border-color: var(--ac3); }
+body.theme-c3 .btn-p, body.theme-c3 .btn-time.active { background: var(--ac3); color: #fff; }
+body.theme-c3 .chk-label input:checked ~ .chk-pill { background: rgba(168, 85, 247, 0.1); border-color: var(--ac3); color: var(--ac3); }
+
+/* --- QUESTION & TIMER --- */
+.q-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.q-tag { display: inline-flex; padding: 6px 15px; border-radius: 25px; background: rgba(255, 159, 67, 0.1); color: var(--ac); font-size: 0.8rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
+.q-sizer { display: flex; gap: 8px; }
+.q-sizer button { background: var(--sf2); border: 1px solid var(--bd); color: var(--tx); font-weight: bold; width: 40px; height: 40px; border-radius: 10px; cursor: pointer; }
+.q-main { font-family: 'DM Serif Display', serif; font-size: 1.8rem; line-height: 1.4; color: var(--tx); min-height: 100px; }
+.laundry-status { color: var(--mu); font-style: italic; font-size: 1.2rem; display: block; margin-top: 10px;}
+
+.lcd-panel { background: #050505; border: 3px solid #1a1a1a; border-radius: 15px; padding: 20px; display: grid; grid-template-columns: 2.2fr 1fr 0.2fr 1fr; align-items: center; font-family: 'Share Tech Mono', monospace; gap: 12px; }
+.lcd-field { background: #111; border: 1px solid #222; border-radius: 6px; padding: 12px 8px; text-align: center; color: var(--tx); }
+.lcd-field.skill { font-size: 0.75rem; font-weight: bold; letter-spacing: 1px; line-height: 1.3; color: var(--ac); }
+.lcd-field.marks { font-size: 0.9rem; font-weight: bold; color: #888; margin-top: 5px; }
+.lcd-field.time { font-size: 2.5rem; text-shadow: 0 0 10px currentColor; }
+.lcd-colon { font-size: 2.2rem; color: #444; font-weight: bold; text-align: center; }
+.lcd-colon.blink { animation: blink 1s infinite; color: var(--tx); }
+
+.timer-controls { display: flex; flex-direction: column; gap: 12px; margin-top: 15px; }
+.timer-row { display: grid; gap: 10px; }
+.timer-row-main { grid-template-columns: 1fr 1fr 1fr; }
+.btn-time { background: var(--sf2); border: 1px solid var(--bd); padding: 14px; font-size: 0.9rem; border-radius: 10px; color: var(--tx); font-weight: bold; cursor: pointer; }
+.active-pause { animation: pausePulse 0.8s infinite alternate; }
+@keyframes pausePulse { from { box-shadow: 0 0 0px var(--am); } to { box-shadow: 0 0 15px var(--am); background: rgba(245, 158, 11, 0.15); } }
+
+.splash-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); backdrop-filter: blur(5px); z-index: 9999; display: none; align-items: center; justify-content: center; }
+.splash-modal { background: var(--sf); border: 2px solid var(--ac); border-radius: 20px; padding: 40px; text-align: center; max-width: 400px; animation: popIn 0.4s forwards; }
+
+@keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+@keyframes tumble { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
+</style>
+</head>
+<body class="theme-c1">
+
+<div class="hdr">
+    <div class="logo"><img id="logoImage" src="" class="logo-img"> Psy-Cat-o-Matic</div>
+    <div class="tabs">
+        <button class="tab-btn active-c1" id="tabC1" onclick="switchTab('C1')">Component 1: Past to Present</button>
+        <button class="tab-btn" id="tabC2" onclick="switchTab('C2')">Component 2: Research Methods</button>
+        <button class="tab-btn" id="tabC3" onclick="switchTab('C3')">Component 3: Implications</button>
+    </div>
+</div>
+
+<div class="layout-grid">
+    <!-- FILTERS -->
+    <div class="card panel-filters">
+        <div class="panel-title" id="filterTitle">Select Program</div>
+        
+        <!-- C1 -->
+        <div id="filtersC1" class="filter-set active">
+            <div class="filter-group"><span class="label-tiny">Skill Level</span><div class="checkbox-grid">
+                <label class="chk-label"><input type="checkbox" class="cb-skill" value="AO1" checked><span class="chk-pill">AO1</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-skill" value="AO2" checked><span class="chk-pill">AO2</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-skill" value="AO3" checked><span class="chk-pill">AO3</span></label>
+            </div></div>
+            <div class="filter-group"><span class="label-tiny">Paper</span><div class="checkbox-grid">
+                <label class="chk-label"><input type="checkbox" class="cb-paper" value="AS" checked><span class="chk-pill">AS</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-paper" value="A" checked><span class="chk-pill">A-Level</span></label>
+            </div></div>
+            <div class="filter-group"><span class="label-tiny">Category</span><div class="checkbox-grid">
+                <label class="chk-label"><input type="checkbox" class="cb-tag-c1" value="assumptions" checked><span class="chk-pill">Assumptions</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-tag-c1" value="therapy" checked><span class="chk-pill">Therapy</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-tag-c1" value="classic research" checked><span class="chk-pill">Classic Research</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-tag-c1" value="debate" checked><span class="chk-pill">Debate (24m)</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-tag-c1" value="approaches" checked><span class="chk-pill">Approaches Evaluation</span></label>
+            </div></div>
+        </div>
+
+        <!-- C2 -->
+        <div id="filtersC2" class="filter-set">
+            <div class="filter-group"><span class="label-tiny">Skill Level</span><div class="checkbox-grid">
+                <label class="chk-label"><input type="checkbox" class="cb-skill" value="AO1" checked><span class="chk-pill">AO1</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-skill" value="AO2" checked><span class="chk-pill">AO2</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-skill" value="AO3" checked><span class="chk-pill">AO3</span></label>
+            </div></div>
+            <div class="filter-group"><span class="label-tiny">Paper</span><div class="checkbox-grid">
+                <label class="chk-label"><input type="checkbox" class="cb-paper" value="AS" checked><span class="chk-pill">AS</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-paper" value="A" checked><span class="chk-pill">A-Level</span></label>
+            </div></div>
+            <div class="filter-group"><span class="label-tiny">General Topics (Section A)</span><div class="checkbox-grid">
+                <label class="chk-label"><input type="checkbox" class="cb-tag-c2" value="Classic Research" checked><span class="chk-pill">Classic Research</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-tag-c2" value="Hypotheses" checked><span class="chk-pill">Hypotheses</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-tag-c2" value="Maths" checked><span class="chk-pill">Maths</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-tag-c2" value="Graphs" checked><span class="chk-pill">Graphs</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-tag-c2" value="Validity" checked><span class="chk-pill">Validity</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-tag-c2" value="Reliability" checked><span class="chk-pill">Reliability</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-tag-c2" value="Ethics" checked><span class="chk-pill">Ethics</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-tag-c2" value="Peer Review" checked><span class="chk-pill">Peer Review</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-tag-c2" value="Research Methods" checked><span class="chk-pill">Research Methods</span></label>
+            </div></div>
+            <div class="filter-group"><span class="label-tiny">Personal Investigations (Section B)</span><div class="checkbox-grid">
+                <label class="chk-label"><input type="checkbox" class="cb-tag-c2" value="PI_Experiment" checked><span class="chk-pill">Experiment</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-tag-c2" value="PI_Quasi_Experiment" checked><span class="chk-pill">Quasi Experiment</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-tag-c2" value="PI_Correlational" checked><span class="chk-pill">Correlational</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-tag-c2" value="PI_Observation" checked><span class="chk-pill">Observation</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-tag-c2" value="PI_Content_Analysis" checked><span class="chk-pill">Content Analysis</span></label>
+            </div></div>
+        </div>
+
+        <!-- C3 -->
+        <div id="filtersC3" class="filter-set">
+            <div class="filter-group"><span class="label-tiny">Skill Level</span><div class="checkbox-grid">
+                <label class="chk-label"><input type="checkbox" class="cb-skill" value="AO1" checked><span class="chk-pill">AO1</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-skill" value="AO2" checked><span class="chk-pill">AO2</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-skill" value="AO3" checked><span class="chk-pill">AO3</span></label>
+            </div></div>
+            <div class="filter-group">
+                <span class="label-tiny">Controversies (25m Essays)</span>
+                <div class="checkbox-grid">
+                    <label class="chk-label"><input type="checkbox" class="cb-contro-c3" value="scientific status" checked><span class="chk-pill">Scientific status</span></label>
+                    <label class="chk-label"><input type="checkbox" class="cb-contro-c3" value="cultural bias" checked><span class="chk-pill">Cultural bias</span></label>
+                    <label class="chk-label"><input type="checkbox" class="cb-contro-c3" value="ethical cost of conducting research" checked><span class="chk-pill">Ethical costs</span></label>
+                    <label class="chk-label"><input type="checkbox" class="cb-contro-c3" value="non-human animals" checked><span class="chk-pill">Non-human animals</span></label>
+                    <label class="chk-label"><input type="checkbox" class="cb-contro-c3" value="gender bias" checked><span class="chk-pill">Gender bias</span></label>
+                </div>
+            </div>
+            <div class="filter-group">
+                <span class="label-tiny">Behaviours</span>
+                <div class="checkbox-grid">
+                    <label class="chk-label"><input type="checkbox" class="cb-behaviour-c3" value="Stress" checked><span class="chk-pill">Stress</span></label>
+                    <label class="chk-label"><input type="checkbox" class="cb-behaviour-c3" value="Schizophrenia" checked><span class="chk-pill">Schizophrenia</span></label>
+                    <label class="chk-label"><input type="checkbox" class="cb-behaviour-c3" value="Addiction" checked><span class="chk-pill">Addiction</span></label>
+                    <label class="chk-label"><input type="checkbox" class="cb-behaviour-c3" value="Criminal Behaviour" checked><span class="chk-pill">Criminal Behaviour</span></label>
+                    <label class="chk-label"><input type="checkbox" class="cb-behaviour-c3" value="Bullying" checked><span class="chk-pill">Bullying</span></label>
+                    <label class="chk-label"><input type="checkbox" class="cb-behaviour-c3" value="Autism" checked><span class="chk-pill">Autism (ASD)</span></label>
+                    <label class="chk-label"><input type="checkbox" class="cb-behaviour-c3" value="Controversy" id="masterControBtn" checked><span class="chk-pill" style="border-color:var(--ac3)">CONTROVERSIES (MASTER)</span></label>
+                </div>
+            </div>
+            <div class="filter-group">
+                <span class="label-tiny">Topic Focus</span>
+                <div class="checkbox-grid">
+                    <label class="chk-label"><input type="checkbox" class="cb-topic-c3" value="Characteristics" onchange="syncC3()"><span class="chk-pill">Characteristics of Behaviour</span></label>
+                    <label class="chk-label"><input type="checkbox" class="cb-topic-c3" value="Explanations" checked onchange="syncC3()"><span class="chk-pill">Explanations of Behaviour</span></label>
+                    <label class="chk-label"><input type="checkbox" class="cb-topic-c3" value="MoM" checked onchange="syncC3()"><span class="chk-pill">Methods of Modification</span></label>
+                </div>
+            </div>
+            <div class="filter-group">
+                <span class="label-tiny">Theory Type</span>
+                <div class="checkbox-grid">
+                    <label class="chk-label"><input type="checkbox" class="cb-type-c3" value="Biological" checked><span class="chk-pill">Biological</span></label>
+                    <label class="chk-label"><input type="checkbox" class="cb-type-c3" value="Individual Differences" checked><span class="chk-pill">Individual Differences</span></label>
+                    <label class="chk-label"><input type="checkbox" class="cb-type-c3" value="Social Psychological" checked><span class="chk-pill">Social Psychological</span></label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MACHINE -->
+    <div class="card panel-spinner machine-box">
+        <div class="panel-title">Machine Cycle</div>
+        <div class="laundromat-container"><div class="machine" id="catMachine">
+            <div class="machine-controls"><div class="m-dot on" id="mDot"></div><div class="m-dot"></div><div class="m-dot"></div></div>
+            <div class="machine-drum-outer"><img id="catImage" src="" class="cat-in-drum"><div class="machine-glass"></div></div>
+        </div></div>
+        <div class="global-controls">
+            <button class="btn-mini" onclick="selectAllFilters(true)">Select All</button>
+            <button class="btn-mini" onclick="selectAllFilters(false)">Clear All</button>
+            <button id="btnSetGen" class="btn-mini" style="display:none" onclick="toggleSet('gen')">General Set</button>
+            <button id="btnSetPI" class="btn-mini" style="display:none" onclick="toggleSet('pi')">Personal Set</button>
+            <button id="btnSetContro" class="btn-mini" style="display:none" onclick="toggleSet('contro')">Contro Set</button>
+            <button id="btnSetBeh" class="btn-mini" style="display:none" onclick="toggleSet('beh')">Behaviour Set</button>
+        </div>
+        <div class="spinner-actions">
+            <button class="btn btn-o" onclick="resetMachine()">RESET</button>
+            <button class="btn btn-p" onclick="spinMachine()">SPIN</button>
+        </div>
+    </div>
+
+    <!-- OUTPUT -->
+    <div class="card panel-question">
+        <div class="q-header"><div class="q-tag" id="uiTag">READY</div><div class="q-sizer"><button onclick="changeFontSize(-0.2)">A-</button><button onclick="changeFontSize(0.2)">A+</button></div></div>
+        <div class="q-main" id="uiQuestion">Load parameters and press SPIN.</div>
+    </div>
+
+    <!-- TIMER -->
+    <div class="card panel-timer">
+        <div class="panel-title">Timer Display</div>
+        <div class="timer-container">
+            <div class="lcd-panel"><div class="lcd-info-stack"><div class="lcd-field skill skill-idle" id="lcdSkill">READY</div><div class="lcd-field marks" id="lcdMarks">--</div></div><div class="lcd-field time" id="lcdMin">00</div><div class="lcd-colon" id="lcdColon">:</div><div class="lcd-field time" id="lcdSec">00</div></div>
+            <div class="timer-controls">
+                <div class="timer-row timer-row-main"><button class="btn btn-p" id="startBtn" onclick="startTimerOnly()" disabled>START</button><button class="btn btn-o" id="pauseBtn" onclick="pauseTimerOnly()" disabled>PAUSE</button><button class="btn btn-o btn-stop" id="stopBtn" onclick="stopTimerButton()" disabled>STOP</button></div>
+                <div class="timer-row timer-row-extra"><button class="btn-time" id="btn25" onclick="toggleExtraTime(0.25)" disabled>+25%</button><button class="btn-time" id="btn50" onclick="toggleExtraTime(0.50)" disabled>+50%</button></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="splashOverlay" class="splash-overlay"><div class="splash-modal"><div class="splash-icon">😻</div><div class="splash-title">WASH COMPLETE!</div><button class="btn btn-p" onclick="closeSplash()">CLOSE</button></div></div>
+
+<!-- DATA -->
+<script src="c1.js"></script><script src="c2.js"></script><script src="c3.js"></script>
+
+<script>
+let activeComp = 'C1', currentQuestion = null, usedQuestions = [], currentFontSize = 1.8;
+const catSound = new Audio("https://cdn.pixabay.com/audio/2025/02/26/audio_6c95941b94.mp3");
+let timerInterval = null, baseTime = 0, timeRemaining = 0, isRunning = false, activeExtraTime = 0;
+
+function switchTab(comp) {
+    activeComp = comp;
+    const catImg = document.getElementById('catImage'), logoImg = document.getElementById('logoImage');
+    const urls = [
+        "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fimgcdn.stablediffusionweb.com%2F2025%2F6%2F4%2F2e9c56ad-fd81-4a46-92fc-33c678eb92cd.jpg&f=1&nofb=1&ipt=ab79096db9e587eb2d81658c6adee30b188ddad9ae5b76b0d2c9f1c8bfe6b8d0",
+        "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fr2.starryai.com%2Fresults%2F1047039881%2Fa240f1a2-663b-46d8-b1ca-b3463517efdd.webp&f=1&nofb=1&ipt=c8fdb46b1c145599d2d4a832397079b1851910ca94e1ccf95d61dfd7c22ce7d9",
+        "https://is.zobj.net/image-server/v1/images?r=K0-5Bhgy_XX2kTlsq9a_Ne3n8MoDUxMa81iv8LHXdMMYNjUarBllOwKXVN1O5H2RhJ-ijJPE5KAnZBCPOdSlnWOd-Z0EQjCZauG5wOyX3aPvBmHLkZgebUqxz2-_uBtI7BJFEZJlaBE9zoQFKKi0KnehIt04wzryWGMJdXwWqOY1fJeBDLSoG2AUK8qe8sf-kGvupyAvB1WrA2MkyVxrWdO9cxe2X3oJfIS8OQ"
+    ];
+
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active-c1','active-c2','active-c3'));
+    document.querySelectorAll('.filter-set').forEach(s => s.classList.remove('active'));
+    document.body.classList.remove('theme-c1','theme-c2','theme-c3');
+    document.body.classList.add('theme-' + comp.toLowerCase());
+    
+    document.getElementById('btnSetGen').style.display = comp === 'C2' ? 'block' : 'none';
+    document.getElementById('btnSetPI').style.display = comp === 'C2' ? 'block' : 'none';
+    document.getElementById('btnSetContro').style.display = comp === 'C3' ? 'block' : 'none';
+    document.getElementById('btnSetBeh').style.display = comp === 'C3' ? 'block' : 'none';
+
+    if(comp==='C1'){ document.getElementById('tabC1').classList.add('active-c1'); document.getElementById('filtersC1').classList.add('active'); catImg.src=urls[0]; logoImg.src=urls[0]; }
+    else if(comp==='C2'){ document.getElementById('tabC2').classList.add('active-c2'); document.getElementById('filtersC2').classList.add('active'); catImg.src=urls[1]; logoImg.src=urls[1]; }
+    else { document.getElementById('tabC3').classList.add('active-c3'); document.getElementById('filtersC3').classList.add('active'); catImg.src=urls[2]; logoImg.src=urls[2]; }
+    
+    document.getElementById('paperFilterWrapper').style.display = comp === 'C3' ? 'none' : 'block';
+    resetMachine();
+}
+
+function syncC3() {
+    const topics = Array.from(document.querySelectorAll(".cb-topic-c3:checked")).map(cb => cb.value);
+    const theoryGrid = document.querySelectorAll(".cb-type-c3");
+    const onlyChars = topics.length === 1 && topics[0] === "Characteristics";
+    theoryGrid.forEach(input => { input.disabled = onlyChars; if(onlyChars) input.checked = false; });
+}
+
+function selectAllFilters(val) { document.querySelectorAll('.filter-set.active input').forEach(cb => cb.checked = val); syncC3(); }
+function toggleSet(type) {
+    if(type === 'gen') document.querySelectorAll('.cb-tag-c2').forEach(cb => { if(!cb.value.startsWith('PI')) cb.checked = !cb.checked; });
+    if(type === 'pi') document.querySelectorAll('.cb-tag-c2').forEach(cb => { if(cb.value.startsWith('PI')) cb.checked = !cb.checked; });
+    if(type === 'contro') document.querySelectorAll('.cb-contro-c3').forEach(cb => cb.checked = !cb.checked);
+    if(type === 'beh') { document.querySelectorAll('.cb-behaviour-c3, .cb-topic-c3, .cb-type-c3').forEach(cb => cb.checked = !cb.checked); syncC3(); }
+}
+
+function getFullFilteredPool() {
+    const activeFilters = document.querySelector('.filter-set.active');
+    const skills = Array.from(activeFilters.querySelectorAll(".cb-skill:checked")).map(cb => cb.value);
+    const db = { C1: typeof c1Questions !== 'undefined' ? c1Questions : [], C2: typeof c2Questions !== 'undefined' ? c2Questions : [], C3: typeof c3Questions !== 'undefined' ? c3Questions : [] };
+
+    if (activeComp === 'C1') {
+        const paps = Array.from(activeFilters.querySelectorAll(".cb-paper:checked")).map(cb => cb.value);
+        const tags = Array.from(activeFilters.querySelectorAll("input[class^='cb-tag']:checked")).map(cb => cb.value);
+        return db.C1.filter(q => q.s.some(s => skills.includes(s)) && paps.includes(q.paper) && tags.includes(q.tag) && !usedQuestions.includes(q));
+    } else if (activeComp === 'C2') {
+        const paps = Array.from(activeFilters.querySelectorAll(".cb-paper:checked")).map(cb => cb.value);
+        const tags = Array.from(activeFilters.querySelectorAll("input[class^='cb-tag']:checked")).map(cb => cb.value);
+        return db.C2.filter(q => q.s.some(s => skills.includes(s)) && paps.includes(q.paper) && tags.includes(q.tag) && !usedQuestions.includes(q));
+    } else {
+        const behMaster = document.getElementById('masterControBtn').parentElement; // Logic marker
+        const behs = Array.from(activeFilters.querySelectorAll(".cb-behaviour-c3:checked")).map(cb => cb.value);
+        const contros = Array.from(activeFilters.querySelectorAll(".cb-contro-c3:checked")).map(cb => cb.value);
+        const topics = Array.from(activeFilters.querySelectorAll(".cb-topic-c3:checked")).map(cb => cb.value);
+        const types = Array.from(activeFilters.querySelectorAll(".cb-type-c3:checked")).map(cb => cb.value);
+        
+        return db.C3.filter(q => {
+            if(usedQuestions.includes(q)) return false;
+            // GATE 1: Controversy Priority
+            if (q.behaviour === "Controversy") {
+                return behs.includes("Controversy") && contros.includes(q.contro);
+            }
+            // GATE 2: Behaviour Topic Priority
+            if(behs.includes(q.behaviour)) {
+                if(!q.s.some(s => skills.includes(s))) return false;
+                const onlyChars = topics.length === 1 && topics[0] === "Characteristics";
+                if(onlyChars && q.topic === "Characteristics") return true;
+                if(topics.includes(q.topic) && (types.length === 0 || types.includes(q.type))) return true;
+            }
+            return false;
+        });
+    }
+}
+
+function spinMachine() {
+    let pool = getFullFilteredPool();
+    const machine = document.getElementById('catMachine'), qBox = document.getElementById('uiQuestion'), tBox = document.getElementById('uiTag'), skillBox = document.getElementById('lcdSkill'), marksBox = document.getElementById('lcdMarks');
+    stopTimer(); disableTimerControls(true); resetExtraTimeToggles();
+    document.querySelectorAll('.time, .lcd-colon').forEach(el => el.classList.remove('timer-flash'));
+    if (pool.length === 0) { tBox.innerHTML = "ERROR"; qBox.innerHTML = "No matches! Adjust filters."; return; }
+
+    machine.classList.add('spinning'); document.getElementById('mDot').classList.add('on');
+    tBox.innerHTML = "WASHING...";
+    const phrases = ["Adding detergent... 🫧", "Spin cycle active... 🌀", "Checking pockets... 👖", "Cleaning load... 🧼", "Extracting question... 😼"];
+    qBox.innerHTML = `<span class="laundry-status">${phrases[Math.floor(Math.random() * phrases.length)]}</span>`;
+    
+    setTimeout(() => {
+        machine.classList.remove('spinning'); document.getElementById('mDot').classList.remove('on');
+        currentQuestion = pool[Math.floor(Math.random() * pool.length)]; usedQuestions.push(currentQuestion);
+        if (activeComp === 'C1') tBox.innerHTML = `${currentQuestion.tag} | ${currentQuestion.year}`;
+        else if (activeComp === 'C2') tBox.innerHTML = `${currentQuestion.tag.replace('PI_','PI: ')} (${currentQuestion.year})`;
+        else if (currentQuestion.behaviour === "Controversy") tBox.innerHTML = `Controversy: ${currentQuestion.contro.toUpperCase()}`;
+        else tBox.innerHTML = `${currentQuestion.behaviour} | ${currentQuestion.topic} (${currentQuestion.year})`;
+        qBox.innerHTML = currentQuestion.q;
+        skillBox.innerText = currentQuestion.s.map(s => s === "AO1" ? "AO1 KNOW" : (s === "AO2" ? "AO2 APPLY" : "AO3 EVAL")).join(" & ");
+        marksBox.innerText = `${currentQuestion.m} MARKS`;
+        baseTime = currentQuestion.m * 81; timeRemaining = baseTime; updateLCDTime(timeRemaining);
+        disableTimerControls(false);
+    }, 1500);
+}
+
+function startTimerOnly() { if (timeRemaining <= 0 || isRunning) return; isRunning = true; document.getElementById('lcdColon').classList.add('blink'); document.getElementById('pauseBtn').classList.remove('active-pause'); timerInterval = setInterval(() => { if (timeRemaining > 0) { timeRemaining--; updateLCDTime(timeRemaining); } else { triggerTimerEnd(); } }, 1000); }
+function pauseTimerOnly() { if (!isRunning) { startTimerOnly(); return; } stopTimer(); document.getElementById('pauseBtn').classList.add('active-pause'); }
+function stopTimer() { if (timerInterval) clearInterval(timerInterval); isRunning = false; document.getElementById('lcdColon').classList.remove('blink'); }
+function stopTimerButton() { stopTimer(); document.getElementById('pauseBtn').classList.remove('active-pause'); if (!currentQuestion) return; let extra = activeExtraTime !== 0 ? Math.floor(baseTime * activeExtraTime) : 0; timeRemaining = baseTime + extra; updateLCDTime(timeRemaining); }
+function toggleExtraTime(pct) { if (!currentQuestion) return; let extra = Math.floor(baseTime * pct); let btn = document.getElementById(pct === 0.25 ? 'btn25' : 'btn50'); if (activeExtraTime === pct) { timeRemaining = Math.max(0, timeRemaining - extra); activeExtraTime = 0; btn.classList.remove('active'); } else { if (activeExtraTime !== 0) toggleExtraTime(activeExtraTime); timeRemaining += extra; activeExtraTime = pct; btn.classList.add('active'); } updateLCDTime(timeRemaining); }
+function triggerTimerEnd() { stopTimer(); document.querySelectorAll('.time, .lcd-colon').forEach(el => el.classList.add('timer-flash')); catSound.play(); document.getElementById('splashOverlay').style.display = 'flex'; }
+function closeSplash() { document.getElementById('splashOverlay').style.display = 'none'; }
+function resetMachine() { stopTimer(); usedQuestions = []; currentQuestion = null; disableTimerControls(true); resetExtraTimeToggles(); document.querySelectorAll('.time, .lcd-colon').forEach(el => el.classList.remove('timer-flash')); document.querySelectorAll('input[type=checkbox]').forEach(cb => cb.checked = true); document.getElementById('uiTag').innerHTML = "READY"; document.getElementById('uiQuestion').innerHTML = "Load parameters and spin."; document.getElementById('lcdSkill').innerText = "READY"; document.getElementById('lcdMarks').innerText = "--"; updateLCDTime(0); syncC3(); }
+function resetExtraTimeToggles() { activeExtraTime = 0; document.getElementById('btn25').classList.remove('active'); document.getElementById('btn50').classList.remove('active'); }
+function disableTimerControls(d) { ['startBtn','pauseBtn','stopBtn','btn25', 'btn50'].forEach(id => document.getElementById(id).disabled = d); }
+function updateLCDTime(s) { document.getElementById('lcdMin').innerText = Math.floor(s/60).toString().padStart(2,"0"); document.getElementById('lcdSec').innerText = (s%60).toString().padStart(2,"0"); }
+function changeFontSize(a) { currentFontSize = Math.min(3, Math.max(1, currentFontSize + a)); document.getElementById('uiQuestion').style.fontSize = currentFontSize + 'rem'; }
+window.onload = () => switchTab('C1');
+</script>
+</body>
+</html>
