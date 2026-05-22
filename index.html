@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Psy-Cat-o-Matic</title>
+
+<!-- Favicon -->
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>😸</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Space+Grotesk:wght@300;500;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 
@@ -17,41 +19,45 @@
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 body { font-family: 'Space Grotesk', sans-serif; background: var(--bg); color: var(--tx); min-height: 100vh; overflow-x: hidden; padding-bottom: 60px; transition: background 0.3s; }
 
-/* --- HEADER --- */
 .hdr { padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; background: var(--sf); border-bottom: 1px solid var(--bd); position: sticky; top: 0; z-index: 100; flex-wrap: wrap; gap: 15px; }
 .logo { font-family: 'DM Serif Display', serif; font-size: 1.6rem; color: var(--ac); display: flex; align-items: center; gap: 10px; }
 .logo-img { width: 35px; height: 32px; border-radius: 50%; object-fit: cover; border: 2px solid var(--ac); }
-.tabs { display: flex; gap: 10px; background: var(--sf2); padding: 5px; border-radius: 12px; border: 1px solid var(--bd); overflow-x: auto; }
-.tab-btn { background: transparent; border: none; color: var(--mu); font-family: inherit; font-weight: 700; padding: 10px 18px; border-radius: 8px; cursor: pointer; transition: 0.2s; font-size: 0.85rem; white-space: nowrap; }
+.tabs { display: flex; gap: 10px; background: var(--sf2); padding: 5px; border-radius: 12px; border: 1px solid var(--bd); overflow-x: auto;}
+.tab-btn { background: transparent; border: none; color: var(--mu); font-family: inherit; font-weight: 700; padding: 10px 18px; border-radius: 8px; cursor: pointer; transition: 0.2s; font-size: 0.85rem; white-space: nowrap;}
 .tab-btn.active-c1 { background: var(--ac); color: #000; }
 .tab-btn.active-c2 { background: var(--ac2); color: #000; }
 .tab-btn.active-c3 { background: var(--ac3); color: #000; }
 
-/* --- GRID --- */
 .layout-grid { display: grid; grid-template-columns: 1fr; gap: 25px; max-width: 1100px; margin: 20px auto; padding: 0 20px; }
 @media (min-width: 768px) {
     .layout-grid { grid-template-columns: 1fr 1fr; grid-template-areas: "filters spinner" "question question" "timer timer"; }
     .panel-filters { grid-area: filters; } .panel-spinner { grid-area: spinner; } .panel-question { grid-area: question; } .panel-timer { grid-area: timer; }
 }
+
 .card { background: var(--sf); border: 1px solid var(--bd); border-radius: 20px; padding: 25px; }
 .panel-title { font-family: 'DM Serif Display', serif; font-size: 1.5rem; color: var(--ac); border-bottom: 1px solid var(--bd); padding-bottom: 12px; margin-bottom: 20px; }
 
 /* --- FILTERS --- */
 .filter-group { margin-bottom: 20px; }
 .label-tiny { font-size: 0.7rem; font-weight: 800; color: var(--mu); letter-spacing: 1px; display: block; margin-bottom: 10px; text-transform: uppercase; }
-.checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
+.checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(135px, 1fr)); gap: 10px; }
 .chk-label { display: block; position: relative; cursor: pointer; font-size: 0.85rem; font-weight: 600; text-align: center; }
 .chk-label input { position: absolute; opacity: 0; }
 .chk-pill { display: block; padding: 12px 6px; background: var(--sf2); border: 2px solid var(--bd); border-radius: 10px; transition: 0.2s; color: var(--tx); line-height: 1.2; }
 .chk-label input:checked ~ .chk-pill { background: rgba(255, 159, 67, 0.1); border-color: var(--ac); color: var(--ac); }
-.chk-label input:disabled ~ .chk-pill { opacity: 0.15; cursor: not-allowed; border-style: dashed; }
+.chk-label input:disabled ~ .chk-pill { opacity: 0.15 !important; cursor: not-allowed; border-style: dashed; }
 
 .filter-set { display: none; }
 .filter-set.active { display: block; }
 
 /* --- MACHINE CYCLE BOX --- */
-.machine-box { display: flex; flex-direction: column; align-items: center; }
-.machine { width: 180px; height: 210px; background: var(--sf2); border: 4px solid var(--bd); border-radius: 15px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.4); margin-bottom: 20px; }
+.mode-switch { display: flex; background: var(--sf2); padding: 5px; border-radius: 10px; width: fit-content; margin: 0 auto 20px auto; border: 1px solid var(--bd); }
+.btn-toggle { border: none; background: transparent; color: var(--mu); padding: 8px 15px; font-weight: 800; font-size: 0.7rem; cursor: pointer; border-radius: 6px; transition: 0.2s; text-transform: uppercase; }
+.btn-toggle.active { background: var(--bg); color: var(--tx); box-shadow: 0 2px 5px #000; }
+
+#spinnerArea { display: flex; flex-direction: column; align-items: center; width: 100%; }
+#selectorArea { display: none; width: 100%; }
+.machine { width: 180px; height: 210px; background: var(--sf2); border: 4px solid var(--bd); border-radius: 15px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
 .machine-controls { width: 100%; height: 30px; border-bottom: 3px solid var(--bd); display: flex; align-items: center; padding: 0 12px; gap: 8px; background: #232333; border-radius: 10px 10px 0 0; }
 .m-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--re); }
 .m-dot.on { background: var(--am); box-shadow: 0 0 10px var(--am); }
@@ -59,6 +65,15 @@ body { font-family: 'Space Grotesk', sans-serif; background: var(--bg); color: v
 .cat-in-drum { width: 100%; height: 100%; object-fit: cover; }
 .spinning .cat-in-drum { animation: tumble 0.4s infinite linear; }
 
+/* Selector Box */
+.search-input { width: 100%; padding: 12px; border-radius: 8px; background: var(--sf2); border: 2px solid var(--bd); color: var(--tx); font-family: inherit; margin-bottom: 12px; outline: none; }
+.q-scroll-list { max-height: 250px; overflow-y: auto; border: 1px solid var(--bd); border-radius: 12px; list-style: none; padding: 0; background: rgba(0,0,0,0.15); }
+.q-list-item { padding: 12px; border-bottom: 1px solid var(--bd); cursor: pointer; transition: 0.2s; font-size: 0.85rem; border-left: 0px solid transparent; }
+.q-list-item:hover { background: rgba(255,255,255,0.05); }
+.q-list-item.active-selection { border-left-width: 6px; background: rgba(255, 159, 67, 0.1); border-left-color: var(--ac); color: var(--ac); }
+.q-list-item-meta { display: flex; justify-content: space-between; font-size: 0.7rem; font-weight: 800; color: var(--mu); margin-bottom: 4px; }
+
+/* Machine Controls */
 .global-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; margin-top: 15px; border-top: 1px solid var(--bd); padding-top: 15px;}
 .btn-mini { padding: 10px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; border-radius: 8px; background: var(--sf2); border: 1px solid var(--bd); color: var(--mu); cursor: pointer; transition: 0.2s; }
 .btn-mini:hover { border-color: var(--tx); color: var(--tx); }
@@ -72,39 +87,95 @@ body { font-family: 'Space Grotesk', sans-serif; background: var(--bg); color: v
 .q-sizer { display: flex; gap: 8px; }
 .q-sizer button { background: var(--sf2); border: 1px solid var(--bd); color: var(--tx); font-weight: bold; width: 40px; height: 40px; border-radius: 10px; cursor: pointer; }
 .q-main { font-family: 'DM Serif Display', serif; font-size: 1.8rem; line-height: 1.4; color: var(--tx); min-height: 100px; }
-.laundry-status { color: var(--mu); font-style: italic; font-size: 1.2rem; display: block; margin-top: 10px;}
 
-/* --- TIMER DISPLAY (2-COLUMN) --- */
+/* --- TIMER --- */
 .timer-container { display: grid; grid-template-columns: 1fr 1.5fr; gap: 20px; align-items: stretch; }
 @media (max-width: 600px) { .timer-container { grid-template-columns: 1fr; } }
 .timer-controls-left { display: flex; flex-direction: column; gap: 10px; justify-content: space-between; }
 .timer-btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.btn-timer-main { padding: 18px; font-size: 1rem; }
-.btn-time { background: var(--sf2); border: 1px solid var(--bd); padding: 12px; font-size: 0.85rem; border-radius: 10px; color: var(--tx); font-weight: bold; cursor: pointer; }
+.btn-time { background: var(--sf2); border: 1px solid var(--bd); padding: 12px; font-size: 0.85rem; border-radius: 10px; color: var(--tx); font-weight: bold; cursor: pointer; transition: 0.2s; }
 .btn-time.active { background: var(--ac); color: #000; border-color: var(--ac); }
+.lcd-panel-right { 
+    background: #050505; 
+    border: 3px solid #1a1a1a; 
+    border-radius: 15px; 
+    padding: 15px; 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    grid-template-rows: 60px 1fr; 
+    gap: 25px; 
+    min-height: 220px; 
+    box-shadow: inset 0 0 30px #000; 
+    position: relative;
+}
 
-.lcd-panel-right { background: #050505; border: 3px solid #1a1a1a; border-radius: 15px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; min-height: 200px; box-shadow: inset 0 0 30px #000; position: relative; }
-.lcd-meta-stack { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
-.lcd-display-strip { background: rgba(0,0,0,0.5); border: 1px solid #222; border-radius: 8px; padding: 10px; text-align: center; }
-.lcd-field.skill { font-size: 0.75rem; font-weight: 800; letter-spacing: 1px; line-height: 1.3; color: var(--ac); text-transform: uppercase; }
-.lcd-field.marks { font-size: 0.9rem; font-weight: bold; color: #888; letter-spacing: 2px; }
-.lcd-clock-area { display: flex; align-items: center; justify-content: center; flex-grow: 1; font-family: 'Share Tech Mono', monospace; }
-.lcd-field.time { font-size: 4rem; text-shadow: 0 0 15px currentColor; line-height: 1; transition: 0.3s; }
-.lcd-colon { font-size: 3.5rem; color: #444; font-weight: bold; margin: 0 10px; transition: 0.3s; }
-.lcd-colon.blink { animation: blink 1s infinite; color: var(--tx); }
+/* Shared tile styling */
+.lcd-field {
+    background: #111;
+    border: 1px solid #222;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lcd-field.skill {
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    line-height: 1.2;
+    color: var(--ac);
+    text-align: center;
+    padding: 5px;
+}
+
+.lcd-field.marks {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #888;
+    font-family: 'Share Tech Mono', monospace;
+}
+
+.time-tile {
+    font-size: 5.5rem;
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--tx);
+    text-shadow: 0 0 15px currentColor;
+    background: #0a0a0a;
+}
+
+.lcd-colon {
+    position: absolute;
+    top: 68%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 3.5rem;
+    font-weight: bold;
+    color: #333;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.lcd-colon.blink { 
+    animation: blink 1s infinite; 
+    color: var(--tx); 
+}
 
 /* --- THEMES --- */
-body.theme-c2 .logo, body.theme-c2 .logo-img, body.theme-c2 .panel-title, body.theme-c2 .q-tag, body.theme-c2 .lcd-field.skill { color: var(--ac2); border-color: var(--ac2); }
-body.theme-c2 .btn-p, body.theme-c2 .btn-time.active { background: var(--ac2); color: #000; }
+body.theme-c2 .logo, body.theme-c2 .logo-img, body.theme-c2 .panel-title, body.theme-c2 .q-tag, body.theme-c2 .lcd-field.skill, body.theme-c2 .search-input:focus { color: var(--ac2); border-color: var(--ac2); }
+body.theme-c2 .btn-p, body.theme-c2 .btn-time.active, body.theme-c2 .btn-toggle.active { background: var(--ac2); color: #000; }
 body.theme-c2 .chk-label input:checked ~ .chk-pill { background: rgba(34, 197, 94, 0.1); border-color: var(--ac2); color: var(--ac2); }
-body.theme-c3 .logo, body.theme-c3 .logo-img, body.theme-c3 .panel-title, body.theme-c3 .q-tag, body.theme-c3 .lcd-field.skill { color: var(--ac3); border-color: var(--ac3); }
-body.theme-c3 .btn-p, body.theme-c3 .btn-time.active { background: var(--ac3); color: #fff; }
+body.theme-c2 .q-list-item.active-selection { border-left-color: var(--ac2); background: rgba(34, 197, 94, 0.1); color: var(--ac2); }
+
+body.theme-c3 .logo, body.theme-c3 .logo-img, body.theme-c3 .panel-title, body.theme-c3 .q-tag, body.theme-c3 .lcd-field.skill, body.theme-c3 .search-input:focus { color: var(--ac3); border-color: var(--ac3); }
+body.theme-c3 .btn-p, body.theme-c3 .btn-time.active, body.theme-c3 .btn-toggle.active { background: var(--ac3); color: #fff; }
 body.theme-c3 .chk-label input:checked ~ .chk-pill { background: rgba(168, 85, 247, 0.1); border-color: var(--ac3); color: var(--ac3); }
+body.theme-c3 .q-list-item.active-selection { border-left-color: var(--ac3); background: rgba(168, 85, 247, 0.1); color: var(--ac3); }
 
 /* --- ANIMATIONS --- */
 @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
 .active-pause { animation: pausePulse 0.8s infinite alternate; border-color: var(--am) !important; color: var(--am) !important; }
-@keyframes pausePulse { from { box-shadow: 0 0 0px var(--am); } to { box-shadow: 0 0 15px var(--am); background: rgba(245, 158, 11, 0.15); } }
+@keyframes pausePulse { from { box-shadow: 0 0 0px var(--am); background: transparent; } to { box-shadow: 0 0 15px var(--am); background: rgba(245, 158, 11, 0.15); } }
 .timer-flash { color: var(--re) !important; text-shadow: 0 0 20px var(--re) !important; animation: flashRed 0.8s infinite alternate !important; }
 @keyframes flashRed { 0% { opacity: 1; } 100% { opacity: 0.3; } }
 @keyframes tumble { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -128,110 +199,125 @@ body.theme-c3 .chk-label input:checked ~ .chk-pill { background: rgba(168, 85, 2
 <div class="layout-grid">
     <!-- FILTERS -->
     <div class="card panel-filters">
-        <div class="panel-title" id="filterTitle">Select Program</div>
+        <div class="panel-title">Select Program</div>
         
+        <!-- C1 Filters -->
         <div id="filtersC1" class="filter-set active">
             <div class="filter-group"><span class="label-tiny">Skill Level</span><div class="checkbox-grid">
-                <label class="chk-label"><input type="checkbox" class="cb-skill" value="AO1" checked><span class="chk-pill">AO1</span></label>
-                <label class="chk-label"><input type="checkbox" class="cb-skill" value="AO2" checked><span class="chk-pill">AO2</span></label>
-                <label class="chk-label"><input type="checkbox" class="cb-skill" value="AO3" checked><span class="chk-pill">AO3</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-skill" value="AO1" checked onchange="syncList()"><span class="chk-pill">AO1</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-skill" value="AO2" checked onchange="syncList()"><span class="chk-pill">AO2</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-skill" value="AO3" checked onchange="syncList()"><span class="chk-pill">AO3</span></label>
             </div></div>
             <div class="filter-group"><span class="label-tiny">Paper</span><div class="checkbox-grid">
-                <label class="chk-label"><input type="checkbox" class="cb-paper" value="AS" checked><span class="chk-pill">AS</span></label>
-                <label class="chk-label"><input type="checkbox" class="cb-paper" value="A" checked><span class="chk-pill">A-Level</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-paper" value="AS" checked onchange="syncList()"><span class="chk-pill">AS</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-paper" value="A" checked onchange="syncList()"><span class="chk-pill">A-Level</span></label>
             </div></div>
             <div class="filter-group"><span class="label-tiny">Category</span><div class="checkbox-grid">
-                <label class="chk-label"><input type="checkbox" class="cb-tag-c1" value="assumptions" checked><span class="chk-pill">Assumptions</span></label>
-                <label class="chk-label"><input type="checkbox" class="cb-tag-c1" value="therapy" checked><span class="chk-pill">Therapy</span></label>
-                <label class="chk-label"><input type="checkbox" class="cb-tag-c1" value="classic research" checked><span class="chk-pill">Classic Research</span></label>
-                <label class="chk-label"><input type="checkbox" class="cb-tag-c1" value="debate" checked><span class="chk-pill">Debate (24m)</span></label>
-                <label class="chk-label"><input type="checkbox" class="cb-tag-c1" value="approaches" checked><span class="chk-pill">Approaches Evaluation</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-tag-c1" value="assumptions" checked onchange="syncList()"><span class="chk-pill">Assumptions</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-tag-c1" value="therapy" checked onchange="syncList()"><span class="chk-pill">Therapy</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-tag-c1" value="classic research" checked onchange="syncList()"><span class="chk-pill">Research</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-tag-c1" value="debate" checked onchange="syncList()"><span class="chk-pill">Debate (24m)</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-tag-c1" value="approaches" checked onchange="syncList()"><span class="chk-pill">Approaches Eval</span></label>
             </div></div>
         </div>
 
+        <!-- C2 Filters -->
         <div id="filtersC2" class="filter-set">
             <div class="filter-group"><span class="label-tiny">Skill Level</span><div class="checkbox-grid">
-                <label class="chk-label"><input type="checkbox" class="cb-skill" value="AO1" checked><span class="chk-pill">AO1</span></label>
-                <label class="chk-label"><input type="checkbox" class="cb-skill" value="AO2" checked><span class="chk-pill">AO2</span></label>
-                <label class="chk-label"><input type="checkbox" class="cb-skill" value="AO3" checked><span class="chk-pill">AO3</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-skill" value="AO1" checked onchange="syncList()"><span class="chk-pill">AO1</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-skill" value="AO2" checked onchange="syncList()"><span class="chk-pill">AO2</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-skill" value="AO3" checked onchange="syncList()"><span class="chk-pill">AO3</span></label>
             </div></div>
             <div class="filter-group"><span class="label-tiny">Paper</span><div class="checkbox-grid">
-                <label class="chk-label"><input type="checkbox" class="cb-paper" value="AS" checked><span class="chk-pill">AS</span></label>
-                <label class="chk-label"><input type="checkbox" class="cb-paper" value="A" checked><span class="chk-pill">A-Level</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-paper" value="AS" checked onchange="syncList()"><span class="chk-pill">AS</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-paper" value="A" checked onchange="syncList()"><span class="chk-pill">A-Level</span></label>
             </div></div>
-            <div class="filter-group"><span class="label-tiny">General Topics</span><div class="checkbox-grid">
-                <label class="chk-label"><input type="checkbox" class="cb-tag-c2" value="Classic Research" checked><span class="chk-pill">Classic Research</span></label>
-                <label class="chk-label"><input type="checkbox" class="cb-tag-c2" value="Hypotheses" checked><span class="chk-pill">Hypotheses</span></label>
-                <label class="chk-label"><input type="checkbox" class="cb-tag-c2" value="Maths" checked><span class="chk-pill">Maths</span></label>
-                <label class="chk-label"><input type="checkbox" class="cb-tag-c2" value="Graphs" checked><span class="chk-pill">Graphs</span></label>
-                <label class="chk-label"><input type="checkbox" class="cb-tag-c2" value="Validity" checked><span class="chk-pill">Validity</span></label>
-                <label class="chk-label"><input type="checkbox" class="cb-tag-c2" value="Reliability" checked><span class="chk-pill">Reliability</span></label>
-                <label class="chk-label"><input type="checkbox" class="cb-tag-c2" value="Ethics" checked><span class="chk-pill">Ethics</span></label>
-                <label class="chk-label"><input type="checkbox" class="cb-tag-c2" value="Peer Review" checked><span class="chk-pill">Peer Review</span></label>
-                <label class="chk-label"><input type="checkbox" class="cb-tag-c2" value="Research Methods" checked><span class="chk-pill">Research Methods</span></label>
+            <div class="filter-group"><span class="label-tiny">General Topics (Section A)</span><div class="checkbox-grid">
+                <label class="chk-label"><input type="checkbox" class="cb-tag-c2" value="Classic Research" checked onchange="syncList()"><span class="chk-pill">Classic</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-tag-c2" value="Hypotheses" checked onchange="syncList()"><span class="chk-pill">Hypotheses</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-tag-c2" value="Maths" checked onchange="syncList()"><span class="chk-pill">Maths</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-tag-c2" value="Graphs" checked onchange="syncList()"><span class="chk-pill">Graphs</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-tag-c2" value="Validity" checked onchange="syncList()"><span class="chk-pill">Validity</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-tag-c2" value="Reliability" checked onchange="syncList()"><span class="chk-pill">Reliability</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-tag-c2" value="Ethics" checked onchange="syncList()"><span class="chk-pill">Ethics</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-tag-c2" value="Peer Review" checked onchange="syncList()"><span class="chk-pill">Peer Review</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-tag-c2" value="Research Methods" checked onchange="syncList()"><span class="chk-pill">Methods</span></label>
             </div></div>
-            <div class="filter-group"><span class="label-tiny">Personal Investigations</span><div class="checkbox-grid">
-                <label class="chk-label"><input type="checkbox" class="cb-tag-c2" value="PI_Experiment" checked><span class="chk-pill">Experiment</span></label>
-                <label class="chk-label"><input type="checkbox" class="cb-tag-c2" value="PI_Quasi_Experiment" checked><span class="chk-pill">Quasi Experiment</span></label>
-                <label class="chk-label"><input type="checkbox" class="cb-tag-c2" value="PI_Correlational" checked><span class="chk-pill">Correlational</span></label>
-                <label class="chk-label"><input type="checkbox" class="cb-tag-c2" value="PI_Observation" checked><span class="chk-pill">Observation</span></label>
-                <label class="chk-label"><input type="checkbox" class="cb-tag-c2" value="PI_Content_Analysis" checked><span class="chk-pill">Content Analysis</span></label>
+            <div class="filter-group"><span class="label-tiny">Personal Investigations (Section B)</span><div class="checkbox-grid">
+                <label class="chk-label"><input type="checkbox" class="cb-tag-c2" value="PI_Experiment" checked onchange="syncList()"><span class="chk-pill">Experiment</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-tag-c2" value="PI_Quasi_Experiment" checked onchange="syncList()"><span class="chk-pill">Quasi Exp</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-tag-c2" value="PI_Correlational" checked onchange="syncList()"><span class="chk-pill">Correlational</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-tag-c2" value="PI_Observation" checked onchange="syncList()"><span class="chk-pill">Observation</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-tag-c2" value="PI_Content_Analysis" checked onchange="syncList()"><span class="chk-pill">Content Analysis</span></label>
             </div></div>
         </div>
 
+        <!-- C3 FILTERS -->
         <div id="filtersC3" class="filter-set">
             <div class="filter-group"><span class="label-tiny">Skill Level</span><div class="checkbox-grid">
-                <label class="chk-label"><input type="checkbox" class="cb-skill" value="AO1" checked><span class="chk-pill">AO1</span></label>
-                <label class="chk-label"><input type="checkbox" class="cb-skill" value="AO2" checked><span class="chk-pill">AO2</span></label>
-                <label class="chk-label"><input type="checkbox" class="cb-skill" value="AO3" checked><span class="chk-pill">AO3</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-skill" value="AO1" checked onchange="syncList()"><span class="chk-pill">AO1</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-skill" value="AO2" checked onchange="syncList()"><span class="chk-pill">AO2</span></label>
+                <label class="chk-label"><input type="checkbox" class="cb-skill" value="AO3" checked onchange="syncList()"><span class="chk-pill">AO3</span></label>
             </div></div>
             <div class="filter-group">
-                <label class="chk-label"><input type="checkbox" id="masterContro" checked onchange="syncC3()"><span class="chk-pill" style="font-size:1rem; border-color:var(--ac3)">MASTER: Controversies (25m Essays)</span></label>
+                <label class="chk-label"><input type="checkbox" id="masterContro" checked onchange="syncC3(); syncList()"><span class="chk-pill" style="font-size:1rem; border-color:var(--ac3)">MASTER: Controversies (25m Essays)</span></label>
                 <div class="checkbox-grid" style="margin-top:10px;">
-                    <label class="chk-label"><input type="checkbox" class="cb-contro-c3" value="scientific status" checked><span class="chk-pill">Scientific status</span></label>
-                    <label class="chk-label"><input type="checkbox" class="cb-contro-c3" value="cultural bias" checked><span class="chk-pill">Cultural bias</span></label>
-                    <label class="chk-label"><input type="checkbox" class="cb-contro-c3" value="ethical cost of conducting research" checked><span class="chk-pill">Ethical costs</span></label>
-                    <label class="chk-label"><input type="checkbox" class="cb-contro-c3" value="non-human animals" checked><span class="chk-pill">Non-human animals</span></label>
-                    <label class="chk-label"><input type="checkbox" class="cb-contro-c3" value="gender bias" checked><span class="chk-pill">Gender bias</span></label>
+                    <label class="chk-label"><input type="checkbox" class="cb-contro-c3" value="scientific status" checked onchange="syncList()"><span class="chk-pill">Science Status</span></label>
+                    <label class="chk-label"><input type="checkbox" class="cb-contro-c3" value="cultural bias" checked onchange="syncList()"><span class="chk-pill">Cultural Bias</span></label>
+                    <label class="chk-label"><input type="checkbox" class="cb-contro-c3" value="ethical cost of conducting research" checked onchange="syncList()"><span class="chk-pill">Ethical Costs</span></label>
+                    <label class="chk-label"><input type="checkbox" class="cb-contro-c3" value="non-human animals" checked onchange="syncList()"><span class="chk-pill">Non-human animals</span></label>
+                    <label class="chk-label"><input type="checkbox" class="cb-contro-c3" value="gender bias" checked onchange="syncList()"><span class="chk-pill">Gender Bias</span></label>
                 </div>
             </div>
             <div class="filter-group">
-                <label class="chk-label"><input type="checkbox" id="masterBeh" checked onchange="syncC3()"><span class="chk-pill" style="font-size:1rem; border-color:var(--cy)">MASTER: Behaviours</span></label>
+                <label class="chk-label"><input type="checkbox" id="masterBeh" checked onchange="syncC3(); syncList()"><span class="chk-pill" style="font-size:1rem; border-color:var(--cy)">MASTER: Behaviours</span></label>
                 <div class="checkbox-grid" style="margin-top:10px;">
-                    <label class="chk-label"><input type="checkbox" class="cb-behaviour-c3" value="Stress" checked><span class="chk-pill">Stress</span></label>
-                    <label class="chk-label"><input type="checkbox" class="cb-behaviour-c3" value="Schizophrenia" checked><span class="chk-pill">Schizophrenia</span></label>
-                    <label class="chk-label"><input type="checkbox" class="cb-behaviour-c3" value="Addiction" checked><span class="chk-pill">Addiction</span></label>
-                    <label class="chk-label"><input type="checkbox" class="cb-behaviour-c3" value="Criminal Behaviour" checked><span class="chk-pill">Criminal Behaviour</span></label>
-                    <label class="chk-label"><input type="checkbox" class="cb-behaviour-c3" value="Bullying" checked><span class="chk-pill">Bullying</span></label>
-                    <label class="chk-label"><input type="checkbox" class="cb-behaviour-c3" value="Autism" checked><span class="chk-pill">Autism (ASD)</span></label>
+                    <label class="chk-label"><input type="checkbox" class="cb-behaviour-c3" value="Stress" checked onchange="syncList()"><span class="chk-pill">Stress</span></label>
+                    <label class="chk-label"><input type="checkbox" class="cb-behaviour-c3" value="Schizophrenia" checked onchange="syncList()"><span class="chk-pill">Schiz</span></label>
+                    <label class="chk-label"><input type="checkbox" class="cb-behaviour-c3" value="Addiction" checked onchange="syncList()"><span class="chk-pill">Addiction</span></label>
+                    <label class="chk-label"><input type="checkbox" class="cb-behaviour-c3" value="Criminal Behaviour" checked onchange="syncList()"><span class="chk-pill">Criminal</span></label>
+                    <label class="chk-label"><input type="checkbox" class="cb-behaviour-c3" value="Bullying" checked onchange="syncList()"><span class="chk-pill">Bullying</span></label>
+                    <label class="chk-label"><input type="checkbox" class="cb-behaviour-c3" value="Autism" checked onchange="syncList()"><span class="chk-pill">Autism (ASD)</span></label>
                 </div>
             </div>
             <div class="filter-group">
                 <span class="label-tiny">Topic Focus</span>
                 <div class="checkbox-grid">
-                    <label class="chk-label"><input type="checkbox" class="cb-topic-c3" value="Characteristics" onchange="syncC3()"><span class="chk-pill">Characteristics</span></label>
-                    <label class="chk-label"><input type="checkbox" class="cb-topic-c3" value="Explanations" checked onchange="syncC3()"><span class="chk-pill">Explanations</span></label>
-                    <label class="chk-label"><input type="checkbox" class="cb-topic-c3" value="MoM" checked onchange="syncC3()"><span class="chk-pill">Modification (MoM)</span></label>
+                    <label class="chk-label"><input type="checkbox" class="cb-topic-c3" value="Characteristics" onchange="syncC3(); syncList()"><span class="chk-pill">Characteristics</span></label>
+                    <label class="chk-label"><input type="checkbox" class="cb-topic-c3" value="Explanations" checked onchange="syncC3(); syncList()"><span class="chk-pill">Explanations</span></label>
+                    <label class="chk-label"><input type="checkbox" class="cb-topic-c3" value="MoM" checked onchange="syncC3(); syncList()"><span class="chk-pill">Modification</span></label>
                 </div>
             </div>
             <div class="filter-group">
                 <span class="label-tiny">Theory Type</span>
                 <div class="checkbox-grid">
-                    <label class="chk-label"><input type="checkbox" class="cb-type-c3" value="Biological" checked><span class="chk-pill">Biological</span></label>
-                    <label class="chk-label"><input type="checkbox" class="cb-type-c3" value="Individual Differences" checked><span class="chk-pill">Individual Differences</span></label>
-                    <label class="chk-label"><input type="checkbox" class="cb-type-c3" value="Social Psychological" checked><span class="chk-pill">Social Psychological</span></label>
+                    <label class="chk-label"><input type="checkbox" class="cb-type-c3" value="Biological" checked onchange="syncList()"><span class="chk-pill">Biological</span></label>
+                    <label class="chk-label"><input type="checkbox" class="cb-type-c3" value="Individual Differences" checked onchange="syncList()"><span class="chk-pill">Individual Diff</span></label>
+                    <label class="chk-label"><input type="checkbox" class="cb-type-c3" value="Social Psychological" checked onchange="syncList()"><span class="chk-pill">Social Psych</span></label>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- MACHINE -->
+    <!-- MACHINE / LIST BOX -->
     <div class="card panel-spinner machine-box">
-        <div class="panel-title">Machine Cycle</div>
-        <div class="laundromat-container"><div class="machine" id="catMachine">
-            <div class="machine-controls"><div class="m-dot on" id="mDot"></div><div class="m-dot"></div><div class="m-dot"></div></div>
-            <div class="machine-drum-outer"><img id="catImage" src="" class="cat-in-drum"><div class="machine-glass"></div></div>
-        </div></div>
+        <div class="mode-switch">
+            <button class="btn-toggle active" id="modeSpin" onclick="setMode('spin')">Random Spin</button>
+            <button class="btn-toggle" id="modeList" onclick="setMode('list')">Search List</button>
+        </div>
+
+        <div id="spinnerArea">
+            <div class="laundromat-container"><div class="machine" id="catMachine">
+                <div class="machine-controls"><div class="m-dot on" id="mDot"></div><div class="m-dot"></div><div class="m-dot"></div></div>
+                <div class="machine-drum-outer"><img id="catImage" src="" class="cat-in-drum"><div class="machine-glass"></div></div>
+            </div></div>
+        </div>
+
+        <div id="selectorArea">
+            <input type="text" id="listSearch" class="search-input" placeholder="Filter current list..." oninput="renderList()">
+            <ul id="qResultsList" class="q-scroll-list"></ul>
+        </div>
+
         <div class="global-controls">
             <button class="btn-mini" onclick="selectAllFilters(true)">Select All</button>
             <button class="btn-mini" onclick="selectAllFilters(false)">Clear All</button>
@@ -242,11 +328,11 @@ body.theme-c3 .chk-label input:checked ~ .chk-pill { background: rgba(168, 85, 2
         </div>
         <div class="spinner-actions">
             <button class="btn btn-o" onclick="resetMachine()">RESET</button>
-            <button class="btn btn-p" onclick="spinMachine()">SPIN</button>
+            <button class="btn btn-p" id="spinBtn" onclick="spinMachine()">SPIN</button>
         </div>
     </div>
 
-    <!-- OUTPUT -->
+    <!-- MAIN DISPLAY AREA -->
     <div class="card panel-question">
         <div class="q-header">
             <div class="q-tag" id="uiTag">READY</div>
@@ -255,44 +341,51 @@ body.theme-c3 .chk-label input:checked ~ .chk-pill { background: rgba(168, 85, 2
         <div class="q-main" id="uiQuestion">Load parameters and press SPIN.</div>
     </div>
 
-    <!-- CLOCK DISPLAY -->
+    <!-- LCD CLOCK -->
     <div class="card panel-timer">
         <div class="panel-title">Timer Display</div>
         <div class="timer-container">
             <div class="timer-controls-left">
-                <button class="btn btn-p btn-timer-main" id="startBtn" onclick="startTimerOnly()" disabled>START</button>
+                <button class="btn btn-p" id="startBtn" onclick="startTimerOnly()" disabled style="padding:20px">START TIMER</button>
                 <div class="timer-btn-group">
                     <button class="btn btn-o" id="pauseBtn" onclick="pauseTimerOnly()" disabled>PAUSE</button>
-                    <button class="btn btn-o" id="stopBtn" onclick="stopTimerButton()" disabled style="color:var(--re); border-color:var(--bd)">STOP</button>
+                    <button class="btn btn-o btn-stop" id="stopBtn" onclick="stopTimerButton()" disabled style="color:var(--re);">STOP</button>
                 </div>
-                <button class="btn-time" id="btn25" onclick="toggleExtraTime(0.25)" disabled>+25% EXTRA TIME</button>
-                <button class="btn-time" id="btn50" onclick="toggleExtraTime(0.50)" disabled>+50% EXTRA TIME</button>
+                <button class="btn-time" id="btn25" onclick="toggleExtraTime(0.25)" disabled>+25% EXTRA</button>
+                <button class="btn-time" id="btn50" onclick="toggleExtraTime(0.50)" disabled>+50% EXTRA</button>
             </div>
-            <div class="lcd-panel-right">
-                <div class="lcd-meta-stack">
-                    <div class="lcd-display-strip"><div class="lcd-field skill skill-idle" id="lcdSkill">READY</div></div>
-                    <div class="lcd-display-strip"><div class="lcd-field marks" id="lcdMarks">--</div></div>
-                </div>
-                <div class="lcd-clock-area">
-                    <div class="lcd-field time" id="lcdMin">00</div><div class="lcd-colon" id="lcdColon">:</div><div class="lcd-field time" id="lcdSec">00</div>
-                </div>
-            </div>
+<div class="lcd-panel-right">
+    <!-- Top Left: Skill -->
+    <div class="lcd-field skill" id="lcdSkill">READY</div>
+    
+    <!-- Top Right: Marks -->
+    <div class="lcd-field marks" id="lcdMarks">[--]</div>
+    
+    <!-- Bottom Left: Minutes -->
+    <div class="lcd-field time-tile" id="lcdMin">00</div>
+    
+    <!-- Bottom Right: Seconds -->
+    <div class="lcd-field time-tile" id="lcdSec">00</div>
+    
+    <!-- Center Colon (Visual Overlay) -->
+    <div class="lcd-colon" id="lcdColon">:</div>
+</div>
         </div>
     </div>
 </div>
 
 <div id="splashOverlay" class="splash-overlay"><div class="splash-modal"><div class="splash-icon">😻</div><div class="splash-title">WASH COMPLETE!</div><button class="btn btn-p" onclick="closeSplash()">CLOSE</button></div></div>
 
-<!-- LOAD DATA -->
+<!-- LOAD LOCAL DATA FILES -->
 <script src="c1.js"></script><script src="c2.js"></script><script src="c3.js"></script>
 
 <script>
 /* --- CORE GLOBALS --- */
-let activeComp = 'C1', currentQuestion = null, usedQuestions = [], currentFontSize = 1.8;
+let activeComp = 'C1', currentQuestion = null, usedQuestions = [], currentFontSize = 1.8, activeMode = 'spin';
 const catSound = new Audio("https://cdn.pixabay.com/audio/2025/02/26/audio_6c95941b94.mp3");
 let timerInterval = null, baseTime = 0, timeRemaining = 0, isRunning = false, activeExtraTime = 0;
 
-/* --- UI & TAB LOGIC --- */
+/* --- UI TABS & MODES --- */
 function switchTab(comp) {
     activeComp = comp;
     const catImg = document.getElementById('catImage'), logoImg = document.getElementById('logoImage');
@@ -305,10 +398,12 @@ function switchTab(comp) {
     document.querySelectorAll('.filter-set').forEach(s => s.classList.remove('active'));
     document.body.classList.remove('theme-c1','theme-c2','theme-c3');
     document.body.classList.add('theme-' + comp.toLowerCase());
+    
     document.getElementById('btnSetGen').style.display = comp === 'C2' ? 'block' : 'none';
     document.getElementById('btnSetPI').style.display = comp === 'C2' ? 'block' : 'none';
     document.getElementById('btnSetContro').style.display = comp === 'C3' ? 'block' : 'none';
     document.getElementById('btnSetBeh').style.display = comp === 'C3' ? 'block' : 'none';
+
     if(comp==='C1'){ document.getElementById('tabC1').classList.add('active-c1'); document.getElementById('filtersC1').classList.add('active'); catImg.src=urls[0]; logoImg.src=urls[0]; }
     else if(comp==='C2'){ document.getElementById('tabC2').classList.add('active-c2'); document.getElementById('filtersC2').classList.add('active'); catImg.src=urls[1]; logoImg.src=urls[1]; }
     else { document.getElementById('tabC3').classList.add('active-c3'); document.getElementById('filtersC3').classList.add('active'); catImg.src=urls[2]; logoImg.src=urls[2]; }
@@ -316,96 +411,78 @@ function switchTab(comp) {
     resetMachine();
 }
 
+function setMode(mode) {
+    activeMode = mode;
+    document.getElementById('modeSpin').classList.toggle('active', mode === 'spin');
+    document.getElementById('modeList').classList.toggle('active', mode === 'list');
+    document.getElementById('spinnerArea').style.display = mode === 'spin' ? 'flex' : 'none';
+    document.getElementById('selectorArea').style.display = mode === 'list' ? 'block' : 'none';
+    document.getElementById('spinBtn').style.display = mode === 'spin' ? 'block' : 'none';
+    if(mode === 'list') renderList();
+}
+
+/* --- LIST VIEW RENDERER --- */
+function syncList() { if(activeMode === 'list') renderList(); }
+
+function renderList() {
+    const listEl = document.getElementById('qResultsList');
+    const search = document.getElementById('listSearch').value.toLowerCase();
+    listEl.innerHTML = "";
+    const pool = getFullFilteredPool().filter(q => q.q.toLowerCase().includes(search));
+    
+    pool.forEach(q => {
+        const li = document.createElement('li');
+        li.className = "q-list-item";
+        if(currentQuestion === q) li.classList.add('active-selection');
+        li.innerHTML = `
+            <div class="q-list-item-meta"><span><b>${q.year}</b> | ${q.m} MARKS</span> <span>${q.s.join('+')}</span></div>
+            <div>${q.q.substring(0, 110)}${q.q.length > 110 ? '...' : ''}</div>
+        `;
+        li.onclick = () => {
+            document.querySelectorAll('.q-list-item').forEach(el => el.classList.remove('active-selection'));
+            li.classList.add('active-selection');
+            loadQuestion(q);
+        };
+        listEl.appendChild(li);
+    });
+}
+
+function loadQuestion(q) {
+    currentQuestion = q;
+    const qBox = document.getElementById('uiQuestion'), tBox = document.getElementById('uiTag'), skillBox = document.getElementById('lcdSkill'), marksBox = document.getElementById('lcdMarks');
+    stopTimer(); resetExtraTimeToggles();
+    document.querySelectorAll('.time, .lcd-colon').forEach(el => el.classList.remove('timer-flash'));
+    if (activeComp === 'C1') tBox.innerHTML = `${q.tag} | ${q.year}`;
+    else if (activeComp === 'C2') tBox.innerHTML = `${q.tag.replace('PI_','PI: ')} (${q.year})`;
+    else if (q.behaviour === "Controversy") tBox.innerHTML = `Controversy: ${q.contro.toUpperCase()}`;
+    else tBox.innerHTML = `${q.behaviour} | ${q.topic} (${q.year})`;
+    qBox.innerHTML = q.q;
+    skillBox.innerText = q.s.map(s => s === "AO1" ? "AO1 KNOW" : (s === "AO2" ? "AO2 APPLY" : "AO3 EVAL")).join(" & ");
+    marksBox.innerText = `${q.m} MARKS`;
+    baseTime = q.m * 81; timeRemaining = baseTime; updateLCDTime(timeRemaining);
+    disableTimerControls(false);
+}
+
+/* --- FILTER LOGIC (GATE SYSTEM) --- */
 function syncC3() {
     const isControOn = document.getElementById('masterContro').checked;
     const isBehOn = document.getElementById('masterBeh').checked;
     document.querySelectorAll('.cb-contro-c3').forEach(cb => cb.disabled = !isControOn);
+    document.querySelectorAll('.cb-behaviour-c3:not(#cbContro), .cb-topic-c3').forEach(cb => cb.disabled = !isBehOn);
     const topics = Array.from(document.querySelectorAll(".cb-topic-c3:checked")).map(cb => cb.value);
-    document.querySelectorAll('.cb-behaviour-c3:not(#cbContro)').forEach(cb => cb.disabled = !isBehOn);
-    document.querySelectorAll('.cb-topic-c3').forEach(cb => cb.disabled = !isBehOn);
     const onlyChars = topics.length === 1 && topics[0] === "Characteristics";
-    document.querySelectorAll(".cb-type-c3").forEach(input => { input.disabled = (!isBehOn || onlyChars); if(onlyChars) input.checked = false; });
+    document.querySelectorAll(".cb-type-c3").forEach(input => { input.disabled = (!isBehOn || onlyChars); });
 }
 
-function selectAllFilters(val) { document.querySelectorAll('.filter-set.active input').forEach(cb => cb.checked = val); syncC3(); }
+function selectAllFilters(val) { document.querySelectorAll('.filter-set.active input').forEach(cb => cb.checked = val); syncC3(); syncList(); }
 function toggleSet(type) {
     if(type === 'gen') document.querySelectorAll('.cb-tag-c2').forEach(cb => { if(!cb.value.startsWith('PI')) cb.checked = !cb.checked; });
     if(type === 'pi') document.querySelectorAll('.cb-tag-c2').forEach(cb => { if(cb.value.startsWith('PI')) cb.checked = !cb.checked; });
-    if(type === 'contro') { const m = document.getElementById('masterContro'); m.checked = !m.checked; document.querySelectorAll('.cb-contro-c3').forEach(cb => cb.checked = m.checked); syncC3(); }
-    if(type === 'beh') { const m = document.getElementById('masterBeh'); m.checked = !m.checked; document.querySelectorAll('.cb-behaviour-c3:not(#cbContro), .cb-topic-c3, .cb-type-c3').forEach(cb => cb.checked = m.checked); syncC3(); }
+    if(type === 'contro') { const m = document.getElementById('masterContro'); m.checked = !m.checked; document.querySelectorAll('.cb-contro-c3').forEach(cb => cb.checked = m.checked); }
+    if(type === 'beh') { const m = document.getElementById('masterBeh'); m.checked = !m.checked; document.querySelectorAll('.cb-behaviour-c3:not(#cbContro), .cb-topic-c3, .cb-type-c3').forEach(cb => cb.checked = m.checked); }
+    syncC3(); syncList();
 }
 
-/* --- CLOCK FUNCTIONS --- */
-function startTimerOnly() {
-    if (timeRemaining <= 0 || isRunning) return;
-    isRunning = true;
-    document.getElementById('lcdColon').classList.add('blink');
-    document.getElementById('pauseBtn').classList.remove('active-pause');
-    clearInterval(timerInterval);
-    timerInterval = setInterval(() => {
-        if (timeRemaining > 0) {
-            timeRemaining--;
-            updateLCDTime(timeRemaining);
-        } else {
-            triggerTimerEnd();
-        }
-    }, 1000);
-}
-
-function pauseTimerOnly() {
-    if (!currentQuestion || timeRemaining <= 0) return;
-    if (isRunning) { stopTimer(); document.getElementById('pauseBtn').classList.add('active-pause'); } 
-    else { startTimerOnly(); }
-}
-
-function stopTimer() {
-    if (timerInterval) clearInterval(timerInterval);
-    isRunning = false;
-    document.getElementById('lcdColon').classList.remove('blink');
-}
-
-function stopTimerButton() {
-    stopTimer();
-    document.getElementById('pauseBtn').classList.remove('active-pause');
-    if (!currentQuestion) return;
-    let extra = activeExtraTime !== 0 ? Math.floor(baseTime * activeExtraTime) : 0;
-    timeRemaining = baseTime + extra;
-    updateLCDTime(timeRemaining);
-}
-
-function toggleExtraTime(pct) {
-    if (!currentQuestion) return;
-    let btn = document.getElementById(pct === 0.25 ? 'btn25' : 'btn50');
-    let otherBtn = document.getElementById(pct === 0.25 ? 'btn50' : 'btn25');
-    let extraAmt = Math.floor(baseTime * pct);
-
-    if (activeExtraTime === pct) {
-        timeRemaining = Math.max(0, timeRemaining - extraAmt);
-        activeExtraTime = 0;
-        btn.classList.remove('active');
-    } else {
-        if (activeExtraTime !== 0) {
-            let oldExtra = Math.floor(baseTime * activeExtraTime);
-            timeRemaining = Math.max(0, timeRemaining - oldExtra);
-            otherBtn.classList.remove('active');
-        }
-        timeRemaining += extraAmt;
-        activeExtraTime = pct;
-        btn.classList.add('active');
-    }
-    updateLCDTime(timeRemaining);
-}
-
-function triggerTimerEnd() {
-    stopTimer();
-    document.querySelectorAll('.time, .lcd-colon').forEach(el => el.classList.add('timer-flash'));
-    catSound.play().catch(e => {});
-    document.getElementById('splashOverlay').style.display = 'flex';
-}
-
-function closeSplash() { document.getElementById('splashOverlay').style.display = 'none'; }
-
-/* --- SPIN LOGIC --- */
 function getFullFilteredPool() {
     const activeFilters = document.querySelector('.filter-set.active');
     const skills = Array.from(activeFilters.querySelectorAll(".cb-skill:checked")).map(cb => cb.value);
@@ -414,24 +491,31 @@ function getFullFilteredPool() {
     if (activeComp === 'C1') {
         const paps = Array.from(activeFilters.querySelectorAll(".cb-paper:checked")).map(cb => cb.value);
         const tags = Array.from(activeFilters.querySelectorAll("input[class^='cb-tag']:checked")).map(cb => cb.value);
-        return db.C1.filter(q => q.s.some(s => skills.includes(s)) && paps.includes(q.paper) && tags.includes(q.tag) && !usedQuestions.includes(q));
+        return db.C1.filter(q => q.s.some(s => skills.includes(s)) && paps.includes(q.paper) && tags.includes(q.tag));
     } else if (activeComp === 'C2') {
         const paps = Array.from(activeFilters.querySelectorAll(".cb-paper:checked")).map(cb => cb.value);
         const tags = Array.from(activeFilters.querySelectorAll("input[class^='cb-tag']:checked")).map(cb => cb.value);
-        return db.C2.filter(q => q.s.some(s => skills.includes(s)) && paps.includes(q.paper) && tags.includes(q.tag) && !usedQuestions.includes(q));
+        return db.C2.filter(q => q.s.some(s => skills.includes(s)) && paps.includes(q.paper) && tags.includes(q.tag));
     } else {
-        const mC = document.getElementById('masterContro').checked, mB = document.getElementById('masterBeh').checked;
-        const behs = Array.from(activeFilters.querySelectorAll(".cb-behaviour-c3:checked")).map(cb => cb.value);
-        const contros = Array.from(activeFilters.querySelectorAll(".cb-contro-c3:checked")).map(cb => cb.value);
-        const topics = Array.from(activeFilters.querySelectorAll(".cb-topic-c3:checked")).map(cb => cb.value);
-        const types = Array.from(activeFilters.querySelectorAll(".cb-type-c3:checked")).map(cb => cb.value);
+        // GATE SYSTEM LOGIC
+        const isC_Master = document.getElementById('masterContro').checked;
+        const isB_Master = document.getElementById('masterBeh').checked;
+        const activeContros = Array.from(activeFilters.querySelectorAll(".cb-contro-c3:checked")).map(cb => cb.value);
+        const activeBehs = Array.from(activeFilters.querySelectorAll(".cb-behaviour-c3:checked")).map(cb => cb.value);
+        const activeTopics = Array.from(activeFilters.querySelectorAll(".cb-topic-c3:checked")).map(cb => cb.value);
+        const activeTypes = Array.from(activeFilters.querySelectorAll(".cb-type-c3:checked")).map(cb => cb.value);
+
         return db.C3.filter(q => {
-            if(usedQuestions.includes(q)) return false;
-            if(mC && q.behaviour === "Controversy" && contros.includes(q.contro)) return true;
-            if(mB && behs.includes(q.behaviour)) {
-                if(!q.s.some(s => skills.includes(s))) return false;
-                if(topics.includes("Characteristics") && q.topic === "Characteristics") return true;
-                if(topics.includes(q.topic) && types.includes(q.type)) return true;
+            // Gate 1: Controversies
+            if (isC_Master && q.behaviour === "Controversy") {
+                return activeContros.includes(q.contro);
+            }
+            // Gate 2: Behaviours
+            if (isB_Master && activeBehs.includes(q.behaviour)) {
+                if (!q.s.some(s => skills.includes(s))) return false;
+                if (activeTopics.includes("Characteristics") && q.topic === "Characteristics") return true;
+                if (activeTopics.includes("Modification") && q.topic === "Modification") return true;
+                if (activeTopics.includes("Explanations") && q.topic === "Explanations" && activeTypes.includes(q.type)) return true;
             }
             return false;
         });
@@ -439,36 +523,33 @@ function getFullFilteredPool() {
 }
 
 function spinMachine() {
-    let pool = getFullFilteredPool();
-    const machine = document.getElementById('catMachine'), qBox = document.getElementById('uiQuestion'), tBox = document.getElementById('uiTag'), skillBox = document.getElementById('lcdSkill'), marksBox = document.getElementById('lcdMarks');
-    stopTimer(); disableTimerControls(true); resetExtraTimeToggles();
-    document.querySelectorAll('.time, .lcd-colon').forEach(el => el.classList.remove('timer-flash'));
-    if (pool.length === 0) { tBox.innerHTML = "ERROR"; qBox.innerHTML = "No matches! Adjust filters."; return; }
-    machine.classList.add('spinning'); document.getElementById('mDot').classList.add('on');
-    tBox.innerHTML = "WASHING...";
-    const phrases = ["Adding detergent... 🫧", "Spin cycle active... 🌀", "Checking pockets... 👖", "Washing mistakes... 🧼", "Extracting question... 😼"];
-    qBox.innerHTML = `<span class="laundry-status">${phrases[Math.floor(Math.random() * phrases.length)]}</span>`;
+    let pool = getFullFilteredPool().filter(q => !usedQuestions.includes(q));
+    if (pool.length === 0) { document.getElementById('uiTag').innerHTML = "ERROR"; document.getElementById('uiQuestion').innerHTML = "No matches found! Adjust filters."; return; }
+    document.getElementById('catMachine').classList.add('spinning'); document.getElementById('mDot').classList.add('on');
+    const phrases = ["Adding detergent... 🫧", "Spin cycle active... 🌀", "Checking pockets... 👖", "Cleaning data... 🧼", "Extracting question... 😼"];
+    document.getElementById('uiQuestion').innerHTML = `<span class="laundry-status">${phrases[Math.floor(Math.random() * phrases.length)]}</span>`;
+    document.getElementById('uiTag').innerHTML = "WASHING...";
     setTimeout(() => {
-        machine.classList.remove('spinning'); document.getElementById('mDot').classList.remove('on');
-        currentQuestion = pool[Math.floor(Math.random() * pool.length)]; usedQuestions.push(currentQuestion);
-        if (activeComp === 'C1') tBox.innerHTML = `${currentQuestion.tag} | ${currentQuestion.year}`;
-        else if (activeComp === 'C2') tBox.innerHTML = `${currentQuestion.tag.replace('PI_','PI: ')} (${currentQuestion.year})`;
-        else if (currentQuestion.behaviour === "Controversy") tBox.innerHTML = `Controversy: ${currentQuestion.contro.toUpperCase()}`;
-        else tBox.innerHTML = `${currentQuestion.behaviour} | ${currentQuestion.topic} (${currentQuestion.year})`;
-        qBox.innerHTML = currentQuestion.q;
-        skillBox.innerText = currentQuestion.s.map(s => s === "AO1" ? "AO1 KNOW" : (s === "AO2" ? "AO2 APPLY" : "AO3 EVAL")).join(" & ");
-        marksBox.innerText = `${currentQuestion.m} MARKS`;
-        baseTime = currentQuestion.m * 81; timeRemaining = baseTime; updateLCDTime(timeRemaining);
-        disableTimerControls(false);
+        document.getElementById('catMachine').classList.remove('spinning'); document.getElementById('mDot').classList.remove('on');
+        let selected = pool[Math.floor(Math.random() * pool.length)]; usedQuestions.push(selected); loadQuestion(selected);
     }, 1500);
 }
 
-function resetMachine() { stopTimer(); usedQuestions = []; currentQuestion = null; disableTimerControls(true); resetExtraTimeToggles(); document.querySelectorAll('.time, .lcd-colon').forEach(el => el.classList.remove('timer-flash')); document.getElementById('pauseBtn').classList.remove('active-pause'); document.querySelectorAll('input[type=checkbox]').forEach(cb => cb.checked = true); document.getElementById('uiTag').innerHTML = "READY"; document.getElementById('uiQuestion').innerHTML = "Press SPIN."; document.getElementById('lcdSkill').innerText = "READY"; document.getElementById('lcdMarks').innerText = "--"; updateLCDTime(0); syncC3(); }
+/* --- CLOCK --- */
+function startTimerOnly() { if (timeRemaining <= 0 || isRunning) return; isRunning = true; document.getElementById('lcdColon').classList.add('blink'); document.getElementById('pauseBtn').classList.remove('active-pause'); timerInterval = setInterval(() => { if (timeRemaining > 0) { timeRemaining--; updateLCDTime(timeRemaining); } else { triggerTimerEnd(); } }, 1000); }
+function pauseTimerOnly() { if (!isRunning) { startTimerOnly(); return; } stopTimer(); document.getElementById('pauseBtn').classList.add('active-pause'); }
+function stopTimer() { if (timerInterval) clearInterval(timerInterval); isRunning = false; document.getElementById('lcdColon').classList.remove('blink'); }
+function stopTimerButton() { stopTimer(); document.getElementById('pauseBtn').classList.remove('active-pause'); if (!currentQuestion) return; let extra = activeExtraTime !== 0 ? Math.floor(baseTime * activeExtraTime) : 0; timeRemaining = baseTime + extra; updateLCDTime(timeRemaining); }
+function toggleExtraTime(pct) { if (!currentQuestion) return; let extraAmt = Math.floor(baseTime * pct); if (activeExtraTime === pct) { timeRemaining = Math.max(0, timeRemaining - extraAmt); activeExtraTime = 0; document.getElementById(pct === 0.25 ? 'btn25' : 'btn50').classList.remove('active'); } else { if (activeExtraTime !== 0) toggleExtraTime(activeExtraTime); timeRemaining += extraAmt; activeExtraTime = pct; document.getElementById(pct === 0.25 ? 'btn25' : 'btn50').classList.add('active'); } updateLCDTime(timeRemaining); }
+function triggerTimerEnd() { stopTimer(); document.querySelectorAll('.time, .lcd-colon').forEach(el => el.classList.add('timer-flash')); catSound.play(); document.getElementById('splashOverlay').style.display = 'flex'; }
+function closeSplash() { document.getElementById('splashOverlay').style.display = 'none'; }
+function resetMachine() { stopTimer(); usedQuestions = []; currentQuestion = null; disableTimerControls(true); resetExtraTimeToggles(); document.querySelectorAll('.time, .lcd-colon').forEach(el => el.classList.remove('timer-flash')); document.getElementById('pauseBtn').classList.remove('active-pause'); document.querySelectorAll('.filter-set.active input').forEach(cb => cb.checked = true); document.getElementById('uiTag').innerHTML = "READY"; document.getElementById('uiQuestion').innerHTML = "Select filters and spin."; document.getElementById('lcdSkill').innerText = "READY"; document.getElementById('lcdMarks').innerText = "--"; updateLCDTime(0); syncC3(); if(activeMode==='list') renderList(); }
 function resetExtraTimeToggles() { activeExtraTime = 0; document.getElementById('btn25').classList.remove('active'); document.getElementById('btn50').classList.remove('active'); }
 function disableTimerControls(d) { ['startBtn','pauseBtn','stopBtn','btn25', 'btn50'].forEach(id => document.getElementById(id).disabled = d); }
 function updateLCDTime(s) { document.getElementById('lcdMin').innerText = Math.floor(s/60).toString().padStart(2,"0"); document.getElementById('lcdSec').innerText = (s%60).toString().padStart(2,"0"); }
 function changeFontSize(a) { currentFontSize = Math.min(3, Math.max(1, currentFontSize + a)); document.getElementById('uiQuestion').style.fontSize = currentFontSize + 'rem'; }
-switchTab('C1');
+
+window.onload = () => switchTab('C1');
 </script>
 </body>
 </html>
